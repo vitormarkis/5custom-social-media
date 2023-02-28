@@ -20,8 +20,8 @@ function RootLayout() {
 
   return (
     <div className="w-screen h-screen bg-gray-900 text-white overflow-y-auto">
-      <header className="w-full bg-gray-800">
-        <main className="p-4 w-full max-w-[1280px] mx-auto flex justify-between">
+      <header className="w-full bg-gray-800 h-16 flex items-center">
+        <main className="p-4 w-full max-w-[1280px] flex justify-between">
           <nav className="flex gap-2">
             <NavLink
               to="/"
@@ -29,12 +29,14 @@ function RootLayout() {
             >
               Home
             </NavLink>
-            <NavLink
-              to="/profile"
-              className={style("px-4 py-2 rounded-lg flex items-center")}
-            >
-              Profile
-            </NavLink>
+            {/* {auth.userStatus === "available" ? (
+              <NavLink
+                to="/profile"
+                className={style("px-4 py-2 rounded-lg flex items-center")}
+              >
+                Profile
+              </NavLink>
+            ) : null} */}
           </nav>
           <nav>
             {auth.user && (
@@ -43,12 +45,15 @@ function RootLayout() {
                   <h2 className="text-lg text-gray-200 font-semibold leading-5">{auth.user.name}</h2>
                   <span className="block text-gray-400 leading-5">{auth.user.username}</span>
                 </div>
-                <div className="rounded-full overflow-hidden border-4 border-black w-12 h-12 ml-3">
+                <NavLink
+                  to="/profile"
+                  className="curso-pointer rounded-full overflow-hidden border-4 border-black w-12 h-12 ml-3"
+                >
                   <img
                     src={auth.user.avatar_url}
                     className="block w-full h-full"
                   />
-                </div>
+                </NavLink>
                 <Popover.Root>
                   <Popover.Trigger asChild>
                     <button className="rounded-full ml-2 w-10 h-7 flex items-center justify-center active:bg-gray-700">
@@ -69,15 +74,6 @@ function RootLayout() {
                     </div>
                   </Popover.Content>
                 </Popover.Root>
-                {/* <button
-                onClick={() => {
-                  auth.logout()
-                  navigate("/login")
-                }}
-                className="px-4 py-2 rounded-lg bg-red-600"
-              >
-                Logout
-              </button> */}
               </div>
             )}
             {!auth.user && (

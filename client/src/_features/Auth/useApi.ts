@@ -1,12 +1,52 @@
 import { AxiosResponse } from "axios"
 import { api } from "../../services/axios"
 import { tokenSchema } from "./schemas"
-import { ILogin, IUser, ResponseLogin, TToken } from "./types"
+import { ILogin, IUser, IValidatingToken, ResponseLogin, TToken } from "./types"
 
 export const useApi = () => ({
-  validateToken: async (token: TToken): Promise<boolean> => {
+  getUserStatus: async (token: TToken): Promise<IValidatingToken> => {
+    return {
+      responseUser: {
+        avatar_url:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWMfXJvqaf9X2uJa_YG0PBbRUSVcHEaEbVxw&usqp=CAU",
+        email: "vitormarkis@gmail.com",
+        name: "Vitor Markis",
+        username: "vitormarkis",
+      },
+      userStatus: "available",
+    }
+    // try {
+    //   const { data: responseUser } = await api.post<IUser, AxiosResponse<IUser>, TToken>("/validate", token)
+    //   return {
+    //     responseUser,
+    //     userStatus: 'available'
+    //   }
+    // } catch (error) {
+    //   return {
+    //     responseUser: {} as IUser,
+    //     userStatus: 'rejected'
+    //   }
+    // }
+  },
+
+  validateToken: async (token: TToken): Promise<{ message: string; user: IUser }> => {
+    return {
+      message: "Usuário autenticado",
+      user: {
+        avatar_url:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWMfXJvqaf9X2uJa_YG0PBbRUSVcHEaEbVxw&usqp=CAU",
+        email: "vitormarkis@gmail.com",
+        name: "Vitor Markis",
+        username: "vitormarkis",
+      },
+    }
+
     const parsedToken = tokenSchema.parse(token)
-    const { data: response } = await api.post<boolean>("/validate", parsedToken)
+    const { data: response } = await api.post<IUser, AxiosResponse<{ message: string; user: IUser }>, string>(
+      "/validate",
+      parsedToken
+    )
+
     return response
   },
   login: async (userdata: ILogin): Promise<ResponseLogin> => {
@@ -24,7 +64,7 @@ export const useApi = () => ({
     return response
   },
   logout: async (): Promise<any> => {
-    const { data: response } = await api.post("/logout")
-    return response
+    // const { data: response } = await api.post("/logout")
+    return new Promise((resolve) => resolve("Servidor executou e deslogou o usuário."))
   },
 })
