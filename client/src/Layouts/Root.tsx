@@ -20,7 +20,7 @@ function RootLayout() {
 
   return (
     <div className="w-screen h-screen bg-gray-900 text-white overflow-y-auto">
-      <header className="w-full bg-gray-800 h-16 flex items-center">
+      <header className="w-full bg-gray-800 h-16 flex items-center justify-center">
         <main className="p-4 w-full max-w-[1280px] flex justify-between">
           <nav className="flex gap-2">
             <NavLink
@@ -42,8 +42,8 @@ function RootLayout() {
             {auth.user && (
               <div className="flex items-center">
                 <div className="flex items-end flex-col">
-                  <h2 className="text-lg text-gray-200 font-semibold leading-5">{auth.user.name}</h2>
-                  <span className="block text-gray-400 leading-5">{auth.user.username}</span>
+                  <h2 className="text-base text-gray-200 font-semibold leading-5">{auth.user.name}</h2>
+                  <span className="block text-gray-400 leading-5 text-sm">{auth.user.username}</span>
                 </div>
                 <NavLink
                   to="/profile"

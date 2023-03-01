@@ -7,6 +7,7 @@ import Login from "./pages/Login"
 import Profile from "./pages/Profile"
 import AuthProvider from "./_features/Auth/context"
 import PrivilegedPage from "./_features/Auth/PrivilegedPage"
+import LamaAuth from "./_features/LamaAuth/context"
 
 const router = createBrowserRouter([
   {
@@ -35,8 +36,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <LamaAuth>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </LamaAuth>
   </React.StrictMode>
 )
