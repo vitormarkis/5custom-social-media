@@ -2,19 +2,21 @@ import { useContext } from "react"
 import { useForm } from "react-hook-form"
 import { SubmitHandler } from "react-hook-form/dist/types"
 import { useNavigate } from "react-router-dom"
-import { AuthContext, useAuth } from "../_features/Auth/context"
-import { loginSchema } from "../_features/Auth/schemas"
-import { ILogin } from "../_features/Auth/types"
+import { AuthContext } from "../_features/Auth/context"
+import { useLamaAuth } from "../_features/LamaAuth/context"
+import { loginCredentialsSchema, TLoginCredentials } from "../_features/LamaAuth/schemas"
 
 const Login: React.FC = () => {
-  const { register, handleSubmit } = useForm<ILogin>()
+  const { register, handleSubmit } = useForm<TLoginCredentials>()
   const navigate = useNavigate()
-  const auth = useContext(AuthContext)
+  // const auth = useContext(AuthContext)
 
-  const submitHandler: SubmitHandler<ILogin> = async (userdata) => {
+  const { login } = useLamaAuth()
+
+  const submitHandler: SubmitHandler<TLoginCredentials> = async (userdata) => {
     try {
-      const parsedUserdata = loginSchema.parse(userdata)
-      await auth.login(parsedUserdata)
+      const parsedUserdata = loginCredentialsSchema.parse(userdata)
+      await login(parsedUserdata)
       navigate("/profile")
     } catch (error) {
       console.log(error)

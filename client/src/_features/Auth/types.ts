@@ -1,4 +1,4 @@
-// import { z } from "zod"
+import { z } from "zod"
 // import { loginSchema, tokenSchema, userSchema } from "./schemas"
 
 // export type IUser = z.infer<typeof userSchema>
