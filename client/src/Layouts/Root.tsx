@@ -30,14 +30,14 @@ function RootLayout() {
             >
               Home
             </NavLink>
-            {/* {auth.userStatus === "available" ? (
+            {currentUser ? (
               <NavLink
-                to="/profile"
+                to="/posts"
                 className={style("px-4 py-2 rounded-lg flex items-center")}
               >
-                Profile
+                Posts
               </NavLink>
-            ) : null} */}
+            ) : null}
           </nav>
           <nav>
             {currentUser && (

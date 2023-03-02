@@ -4,6 +4,6 @@ export enum ENToken {
 }
 
 export enum ENCookies {
-  ACCESS_TOKEN = "acessToken",
+  ACCESS_TOKEN = "accessToken",
   REFRESH_TOKEN = "refreshToken",
 }

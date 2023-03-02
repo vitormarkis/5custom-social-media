@@ -56,7 +56,7 @@ export const login: RequestHandler = (request, response) => {
 
     const refreshToken = jwt.sign({}, ENToken.JWT_REFRESH_SECRET_TOKEN, {
       subject: String(loginUser.id),
-      expiresIn: "60s",
+      expiresIn: "20m",
     })
 
     const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
@@ -64,29 +64,32 @@ export const login: RequestHandler = (request, response) => {
       expiresIn: "15s",
     })
 
-    return response
-      .cookie(ENCookies.ACCESS_TOKEN, accessToken, {
-        httpOnly: true,
-      })
-      .cookie(ENCookies.REFRESH_TOKEN, refreshToken, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json({
-        message: "Usuário logado!",
-        user: returnedUser,
-        refreshToken,
-        accessToken,
-      })
+    return (
+      response
+        // .setHeader("Access-Control-Allow-Origin", "*")
+        .setHeader("Access-Control-Allow-Credentials", "true")
+        .cookie(ENCookies.ACCESS_TOKEN, accessToken, {
+          httpOnly: true,
+        })
+        .cookie(ENCookies.REFRESH_TOKEN, refreshToken, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json({
+          message: "Usuário logado!",
+          user: returnedUser,
+          refreshToken,
+          accessToken,
+        })
+    )
   })
 }
 
 export const logout: RequestHandler = (request, response) => {
   return response
-    .clearCookie(ENCookies.ACCESS_TOKEN, {
-      secure: true,
-      sameSite: "none",
-    })
+    .setHeader("Access-Control-Allow-Credentials", "true")
+    .clearCookie(ENCookies.ACCESS_TOKEN)
+    .clearCookie(ENCookies.REFRESH_TOKEN)
     .status(200)
     .json({ message: "Usuário deslogado." })
 }
