@@ -5,6 +5,7 @@ import { IUser, loginCredentialsSchema, TLoginCredentials } from "./schemas"
 interface ILamaAuthContext {
   currentUser: IUser | null
   login: (credentials: TLoginCredentials) => Promise<void>
+  logout: () => Promise<void>
 }
 
 export const LamaAuthContext = createContext({} as ILamaAuthContext)
@@ -34,9 +35,17 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }
 
+  const logout = async () => {
+    const res: any = await axios.post("http://localhost:3434/api/auth/logout")
+    setCurrentUser(null)
+    localStorage.removeItem("lamaUser")
+    console.log(res.data.message)
+  }
+
   const value: ILamaAuthContext = {
     login,
     currentUser,
+    logout,
   }
 
   return (

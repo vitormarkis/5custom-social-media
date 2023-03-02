@@ -1,7 +1,9 @@
 export enum ENToken {
   JWT_SECRET_TOKEN = "myowncustommedia",
+  JWT_REFRESH_SECRET_TOKEN = "mycustomrefreshedtoken",
 }
 
 export enum ENCookies {
-  ACESS_TOKEN = "acessToken",
+  ACCESS_TOKEN = "acessToken",
+  REFRESH_TOKEN = "refreshToken",
 }

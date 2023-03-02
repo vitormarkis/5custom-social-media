@@ -3,13 +3,14 @@ import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import { LogOut } from "@styled-icons/evaicons-solid/LogOut"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { useAuth } from "../_features/Auth/context"
+import { useLamaAuth } from "../_features/LamaAuth/context"
 
 function RootLayout() {
-  const auth = useAuth()
   const navigate = useNavigate()
+  const { currentUser, logout } = useLamaAuth()
 
   const handleLogoutButton = () => {
-    auth.logout()
+    logout()
     navigate("/login")
   }
 
@@ -39,18 +40,18 @@ function RootLayout() {
             ) : null} */}
           </nav>
           <nav>
-            {auth.user && (
+            {currentUser && (
               <div className="flex items-center">
                 <div className="flex items-end flex-col">
-                  <h2 className="text-base text-gray-200 font-semibold leading-5">{auth.user.name}</h2>
-                  <span className="block text-gray-400 leading-5 text-sm">{auth.user.username}</span>
+                  <h2 className="text-base text-gray-200 font-semibold leading-5">{currentUser.name}</h2>
+                  <span className="block text-gray-400 leading-5 text-sm">{currentUser.username}</span>
                 </div>
                 <NavLink
                   to="/profile"
-                  className="curso-pointer rounded-full overflow-hidden border-4 border-black w-12 h-12 ml-3"
+                  className="cursor-pointer rounded-full overflow-hidden border-4 border-black w-12 h-12 ml-3"
                 >
                   <img
-                    src={auth.user.avatar_url}
+                    src={currentUser.profile_pic}
                     className="block w-full h-full"
                   />
                 </NavLink>
@@ -76,7 +77,7 @@ function RootLayout() {
                 </Popover.Root>
               </div>
             )}
-            {!auth.user && (
+            {!currentUser && (
               <NavLink
                 to="/login"
                 className={style("px-4 py-2 rounded-lg block bg-blue-500")}

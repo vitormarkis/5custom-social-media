@@ -6,7 +6,14 @@ import { ENCookies, ENToken } from "../constants/secret"
 import { loginCredentialsSchema, registerCredentialsSchema, TUser } from "../schemas/user"
 import { connection } from "../services/mysql"
 
+interface IRefreshToken {
+  id: number
+  user_id: number
+  expires_in: number
+}
+
 interface LoginQuery extends RowDataPacket, TUser {}
+interface RefreshTokenQuery extends RowDataPacket, IRefreshToken {}
 
 export const register: RequestHandler = (request, response) => {
   const credentials = registerCredentialsSchema.parse(request.body)
@@ -36,8 +43,8 @@ export const login: RequestHandler = (request, response) => {
   const credentials = loginCredentialsSchema.parse(request.body)
   const q = "select * from users where username = ?"
 
-  connection.query<LoginQuery[]>(q, [credentials.username], (error, data) => {
-    const loginUser = data[0]
+  connection.query<LoginQuery[]>(q, [credentials.username], async (error, data) => {
+    const loginUser: LoginQuery = data[0]
 
     if (error) return response.status(500).json(error)
     if (data.length === 0) return response.status(404).json({ message: "Usuário não encontrado." })
@@ -45,24 +52,66 @@ export const login: RequestHandler = (request, response) => {
     const match = bcrypt.compareSync(credentials.password, loginUser.password)
     if (!match) return response.status(400).json({ message: "Usuário ou senha incorretos." })
 
-    const token = jwt.sign({ id: loginUser.id }, ENToken.JWT_SECRET_TOKEN)
     const { password, ...returnedUser } = loginUser
 
-    response
-      .cookie(ENCookies.ACESS_TOKEN, token, {
+    const refreshToken = jwt.sign({}, ENToken.JWT_REFRESH_SECRET_TOKEN, {
+      subject: String(loginUser.id),
+      expiresIn: "60s",
+    })
+
+    const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
+      subject: String(loginUser.id),
+      expiresIn: "15s",
+    })
+
+    return response
+      .cookie(ENCookies.ACCESS_TOKEN, accessToken, {
+        httpOnly: true,
+      })
+      .cookie(ENCookies.REFRESH_TOKEN, refreshToken, {
         httpOnly: true,
       })
       .status(200)
-      .json({ message: "Usuário logado!", user: returnedUser })
+      .json({
+        message: "Usuário logado!",
+        user: returnedUser,
+        refreshToken,
+        accessToken,
+      })
   })
 }
 
 export const logout: RequestHandler = (request, response) => {
   return response
-    .clearCookie(ENCookies.ACESS_TOKEN, {
+    .clearCookie(ENCookies.ACCESS_TOKEN, {
       secure: true,
       sameSite: "none",
     })
     .status(200)
     .json({ message: "Usuário deslogado." })
+}
+
+export const refreshTokenHandler: RequestHandler = async (request, response) => {
+  const { refreshToken } = request.body
+  if (!refreshToken) return response.status(409).json({ message: "Nenhum refresh token foi fornecido." })
+
+  const refreshTokenPayload = jwt.decode(refreshToken)
+
+  if (!refreshTokenPayload)
+    return response.status(500).json({ message: "O refresh token provido não fornece nenhum payload." })
+
+  if (!(typeof refreshTokenPayload.sub === "string"))
+    return response.status(500).json({ message: "O subject do refresh token não é um id de um usuário!" })
+
+  try {
+    jwt.verify(refreshToken, ENToken.JWT_REFRESH_SECRET_TOKEN)
+    const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
+      subject: refreshTokenPayload.sub,
+      expiresIn: "15s",
+    })
+
+    return response.cookie(ENCookies.ACCESS_TOKEN, accessToken).json({ accessToken })
+  } catch (error) {
+    return response.status(401).json({ message: "Refresh token inválido." })
+  }
 }
