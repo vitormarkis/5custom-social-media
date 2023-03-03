@@ -28,13 +28,7 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { data } = await api.post<
       {},
       AxiosResponse<{ message: string; user: IUser; accessToken: string; refreshToken: string }>
-    >(
-      "/auth/login",
-      { password, username },
-      {
-        withCredentials: true,
-      }
-    )
+    >("/auth/login", { password, username })
     setCurrentUser(data.user)
     localStorage.setItem("lamaUser", JSON.stringify(data.user))
     localStorage.setItem("refreshToken", data.refreshToken)
@@ -56,7 +50,6 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     )
     setCurrentUser(null)
     localStorage.removeItem("lamaUser")
-    console.log(res.data.message)
   }
 
   const value: ILamaAuthContext = {

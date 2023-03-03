@@ -5,7 +5,7 @@ import { useAuth } from "../_features/Auth/context"
 const Posts: React.FC = () => {
   const { data } = useQuery({
     queryKey: ["posts"],
-    queryFn: () => api.get("/posts", { withCredentials: true }).then((response) => response.data),
+    queryFn: () => api.get("/posts").then((response) => response.data),
     staleTime: 1000 * 10,
   })
 

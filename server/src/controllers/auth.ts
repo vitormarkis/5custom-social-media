@@ -56,7 +56,7 @@ export const login: RequestHandler = (request, response) => {
 
     const refreshToken = jwt.sign({}, ENToken.JWT_REFRESH_SECRET_TOKEN, {
       subject: String(loginUser.id),
-      expiresIn: "20m",
+      expiresIn: "10m",
     })
 
     const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
@@ -115,6 +115,6 @@ export const refreshTokenHandler: RequestHandler = async (request, response) => 
 
     return response.cookie(ENCookies.ACCESS_TOKEN, accessToken).json({ accessToken })
   } catch (error) {
-    return response.status(401).json({ message: "Refresh token inválido." })
+    return response.status(401).json({ type: "INVALID_REFRESH_TOKEN", message: "Refresh token inválido." })
   }
 }
