@@ -34,12 +34,14 @@ const Login: React.FC = () => {
         <h3 className="text-sm text-gray-500">Faça login para continuar.</h3>
       </div>
       <input
+      autoComplete="off"
         type="text"
         {...register("username")}
         placeholder="Digite seu username..."
         className="p-3 rounded-lg border-2 border-black bg-gray-700"
       />
       <input
+      autoComplete="off"
         type="password"
         {...register("password")}
         placeholder="Digite sua senha..."

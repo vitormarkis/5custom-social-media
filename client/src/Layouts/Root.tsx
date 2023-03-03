@@ -2,7 +2,6 @@ import * as Popover from "@radix-ui/react-popover"
 import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import { LogOut } from "@styled-icons/evaicons-solid/LogOut"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { useAuth } from "../_features/Auth/context"
 import { useLamaAuth } from "../_features/LamaAuth/context"
 
 function RootLayout() {
@@ -20,7 +19,7 @@ function RootLayout() {
       `${isActive ? "bg-black/20" : ""} ${styleClasses}`
 
   return (
-    <div className="w-screen h-screen bg-gray-900 text-white overflow-y-auto">
+    <div className="w-screen h-screen bg-gray-900 text-white overflow-y-auto flex flex-col">
       <header className="w-full bg-gray-800 h-16 flex items-center justify-center">
         <main className="p-4 w-full max-w-[1280px] flex justify-between">
           <nav className="flex gap-2">
@@ -52,7 +51,7 @@ function RootLayout() {
                 >
                   <img
                     src={currentUser.profile_pic}
-                    className="block w-full h-full"
+                    className="block w-full h-full object-cover"
                   />
                 </NavLink>
                 <Popover.Root>
@@ -61,7 +60,10 @@ function RootLayout() {
                       <ThreeDots width={22} />
                     </button>
                   </Popover.Trigger>
-                  <Popover.Content asChild>
+                  <Popover.Content
+                    asChild
+                    align="end"
+                  >
                     <div className="py-1 px-1 bg-slate-700 rounded-lg">
                       <button
                         className="py-0.5 pl-2 pr-4 hover:bg-slate-600 rounded-md flex gap-2 items-center"
@@ -88,7 +90,7 @@ function RootLayout() {
           </nav>
         </main>
       </header>
-      <div className="w-full max-w-[1280px] mx-auto">
+      <div className="grow w-full max-w-[1280px] mx-auto">
         <Outlet />
       </div>
     </div>

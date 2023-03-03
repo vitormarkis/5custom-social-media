@@ -51,6 +51,9 @@ export function setAccessTokenCookie(accessToken: string) {
   document.cookie = `accessToken=${accessToken}; expires=${expiracao.toUTCString()}`
 }
 
-const getRefreshToken = () => {
+export const getRefreshToken = () => {
   return localStorage.getItem("refreshToken") ?? ""
+}
+export const getAccessToken = () => {
+  return localStorage.getItem("accessToken") ?? ""
 }

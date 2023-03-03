@@ -1,18 +1,20 @@
 import { RequestHandler } from "express"
+import jwt from "jsonwebtoken"
 import { RowDataPacket } from "mysql2"
-import { TUser, userSchema } from "../schemas/user"
+import { ENCookies } from "../constants/secret"
+import { TUser } from "../schemas/user"
 import { connection } from "../services/mysql"
-
-const requestSchema = userSchema.pick({
-  username: true,
-})
 
 interface UserQuery extends RowDataPacket, TUser {}
 
 export const getUsers: RequestHandler = (request, response) => {
-  const { username } = requestSchema.parse(request.body)
-  const q = "select * from users where username = ?"
-  connection.query<UserQuery[]>(q, [username], (error, result) => {
+  const token = request.cookies[ENCookies.ACCESS_TOKEN]
+  const { sub } = jwt.decode(token)
+
+  console.log({ token, sub })
+  
+  const q = "select * from users where id = ?"
+  connection.query<UserQuery[]>(q, [sub], (error, result) => {
     if (error) return response.json(error)
     if (result.length === 0) return response.status(404).json({ message: "Usuário não encontrado." })
     const { password, ...user } = result[0]
