@@ -19,8 +19,8 @@ function RootLayout() {
       `${isActive ? "bg-black/20" : ""} ${styleClasses}`
 
   return (
-    <div className="w-screen h-screen bg-gray-900 text-white overflow-y-auto flex flex-col">
-      <header className="w-full bg-gray-800 h-16 flex items-center justify-center">
+    <div className="w-screen h-screen max-h-screen bg-gray-900 text-white flex flex-col overflow-auto">
+      <header className="w-full bg-gray-800 h-16 flex items-center justify-center border-b border-b-gray-900">
         <main className="p-4 w-full max-w-[1280px] flex justify-between">
           <nav className="flex gap-2">
             <NavLink
@@ -90,7 +90,7 @@ function RootLayout() {
           </nav>
         </main>
       </header>
-      <div className="grow w-full max-w-[1280px] mx-auto">
+      <div className="w-full max-w-[1280px] mx-auto chat">
         <Outlet />
       </div>
     </div>

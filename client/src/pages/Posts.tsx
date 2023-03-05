@@ -5,22 +5,54 @@ import { IPostBody, postBodySchema } from "../schemas/posts"
 import { api } from "../services/axios"
 import queryClient from "../services/queryClient"
 
+import { Cursor } from "@styled-icons/bootstrap/Cursor"
+import { CursorFill } from "@styled-icons/bootstrap/CursorFill"
+
 import NewPostInput from "../components/molecules/NewPostInput"
 import Post from "../components/molecules/Post"
 import { APIPost } from "../components/molecules/Post/types"
+import { useLamaAuth } from "../_features/LamaAuth/context"
 
-const fakePosts = [
-  "Autenticação com refresh token são mais seguras porque impossibilitam que o atacante possa ter acesso ao conteúdo da conta por muito tempo.",
-  "Pra conseguir definir o tempo de expiração do cookie, eu tive que usar outra biblioteca de decifração pra conseguir pegar o tempo de expiração e então setar o tempo de expiração do cookie como o mesmo tempo de expiração do token.",
-  `Cara eu to testando
-  uma palavra por linha
-  vamos ver no que
-  vai dar!`,
+const followUsers = [
+  {
+    user_id: 1,
+    profile_pic: "https://tm.ibxk.com.br/2021/11/24/24162321481464.jpg?ims=1200x675",
+    username: "vitormarkis",
+    name: "Vitor Markis",
+  },
+  {
+    user_id: 2,
+    profile_pic:
+      "https://1.bp.blogspot.com/-rwEdYIDEKQY/X52lu3v7-lI/AAAAAAAADbo/cZjgiCDgdpk6xQQpnJjmtJPRUZ-TDhgEwCLcBGAsYHQ/s500/ecfaf90f3d9128e0a9995af74f52770c.jpg",
+    username: "kauanbarts",
+    name: "Kauan Barts",
+  },
+  {
+    user_id: 3,
+    profile_pic: "https://img.quizur.com/f/img60d0d76e470cb8.51574981.jpg?lastEdited=1624299378",
+    username: "leoschell",
+    name: "Leonardo Schell",
+  },
+  {
+    user_id: 4,
+    profile_pic:
+      "https://yt3.googleusercontent.com/ytc/AL5GRJWi9AyIP1ZFUGkoN5TJ4JRQiXjBWFHuvwIuux11=s900-c-k-c0x00ffffff-no-rj",
+    username: "thomascrow",
+    name: "Thomas Emmanuel",
+  },
+  {
+    user_id: 5,
+    profile_pic:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    username: "ikedias",
+    name: "Michel Dias",
+  },
 ]
 
 const Posts: React.FC = () => {
   const [messagesLayoutStyle, setMessagesLayoutStyle] = useState(1)
   const { reset } = useForm<IPostBody>()
+  const { currentUser } = useLamaAuth()
   const { mutate } = useMutation({
     mutationFn: (newPostData: IPostBody) => api.post("/posts", newPostData),
     onSuccess: () => {
@@ -39,32 +71,27 @@ const Posts: React.FC = () => {
 
   const posts = rawPosts?.sort((a, b) => (a.post_created_at > b.post_created_at ? 1 : -1))
 
+  const followingUsersData = [
+    {
+      follower_user_id: currentUser?.id,
+      followed_user_id: 4,
+    },
+    {
+      follower_user_id: currentUser?.id,
+      followed_user_id: 5,
+    },
+  ]
+
+  const followingUsers = followingUsersData.reduce((acc: number[], item) => {
+    acc.push(item.followed_user_id)
+    return acc
+  }, [])
+
   return (
-    <div className="max-w-[1280px] w-full mx-auto h-full p-8 flex">
-      <main className="flex flex-col gap-6 justify-between grow">
-        {messagesLayoutStyle === 0 ? (
-          <section className="flex flex-col gap-7">
-            {posts &&
-              posts.map((post: any) => (
-                <article
-                  key={post?.post_id}
-                  className="p-4 gap-4 rounded-lg bg-gray-800 flex relative items-start"
-                >
-                  <div className="absolute top-0 left-3 -translate-y-1/2 py-0.5 px-2 text-sm leading-4 rounded-md bg-emerald-700">
-                    <p className="">{post?.username}</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 mt-1.5">
-                    <img
-                      src={post?.profile_pic}
-                      className="w-full h-full block object-cover"
-                    />
-                  </div>
-                  <p>{post?.text}</p>
-                </article>
-              ))}
-          </section>
-        ) : messagesLayoutStyle === 1 ? (
-          <section className="flex flex-col">
+    <div className="flex">
+      <div className="custom-scroll flex border-x border-x-gray-800">
+        <main className="relative flex grow flex-col justify-between w-[900px]">
+          <section className="flex flex-col chat overflow-auto custom-scroll">
             {posts &&
               posts.map((post) => (
                 <Post
@@ -73,14 +100,58 @@ const Posts: React.FC = () => {
                 />
               ))}
           </section>
-        ) : (
-          <h1>Um erro no messagesLayoutStyle aconteceu!</h1>
-        )}
-        <NewPostInput
-          mutate={mutate}
-          fieldsParser={postBodySchema}
-        />
-      </main>
+          <div className="w-full bg-gray-800 px-4 py-4 gap-2 border-t border-t-black">
+            <NewPostInput
+            className=""
+              mutate={mutate}
+              fieldsParser={postBodySchema}
+            />
+          </div>
+        </main>
+      </div>
+
+      <div className="hidden grow-[2] border-l border-l-gray-800 md:block">
+        <div>
+          <div className="border-b border-b-gray-800">
+            <div className="mt-4 px-4">
+              <h1 className="mb-2 text-2xl font-black">Sugestões:</h1>
+            </div>
+            <div className="flex flex-col">
+              {followUsers.map((user) => {
+                if (user.user_id === currentUser?.id) return
+
+                return (
+                  <div className="flex cursor-pointer items-center gap-1 py-2 px-4 hover:bg-gray-800">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-gray-900 bg-gray-700">
+                      <img
+                        src={user.profile_pic}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="ml-1 flex flex-col">
+                      <h1>{user.name}</h1>
+                      <p className="text-sm text-gray-500">{user.username}</p>
+                    </div>
+                    <div className="ml-auto flex w-[80px] flex-col items-center gap-1 px-2">
+                      <button onClick={() => console.log(user.user_id)}>
+                        {followingUsers.includes(user.user_id) ? (
+                          <CursorFill width={24} />
+                        ) : (
+                          <Cursor width={24} />
+                        )}
+                      </button>
+                      <span className="text-[10px] text-gray-400 hover:underline">
+                        {followingUsers.includes(user.user_id) ? "Seguindo" : "Seguir"}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

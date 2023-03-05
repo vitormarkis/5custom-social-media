@@ -9,3 +9,16 @@
 .post-buttons > div:not(:last-of-type) {
   @apply border-b border-b-gray-900
 }
+
+.custom-scroll::-webkit-scrollbar {
+  padding-left: 2px;
+  width: 7px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: #999;
+}
+
+.chat {
+  height: calc(100vh - 228px);
+}
