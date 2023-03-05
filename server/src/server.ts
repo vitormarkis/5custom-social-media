@@ -20,8 +20,8 @@ app.use(
 )
 app.use(cookieParser())
 
-app.use("/api/posts/", postsRouter)
 app.use("/api/auth/", authRouter)
+app.use("/api/posts/", requireAuth, postsRouter)
 app.use("/api/users/", requireAuth, usersRouter)
 
 app.listen(process.env.PORT, () => console.log("Servidor iniciando na porta " + process.env.PORT))

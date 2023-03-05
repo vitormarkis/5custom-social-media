@@ -1,10 +1,9 @@
 import express from "express"
-import { requireAuth } from "../middlewares/ensureAuth"
+import * as PostsControllers from "../controllers/posts"
 
 const postsRouter = express.Router()
 
-postsRouter.get("/", requireAuth, (request, response) => {
-  return response.status(200).json("Aqui está a lista de posts.")
-})
+postsRouter.get("/", PostsControllers.getPosts)
+postsRouter.post("/", PostsControllers.createPost)
 
 export default postsRouter
