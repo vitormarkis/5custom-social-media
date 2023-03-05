@@ -8,12 +8,19 @@ interface Query extends TUser, IPost, RowDataPacket {}
 interface User extends IUser, IPost {}
 
 export const getPosts: RequestHandler = (request, response) => {
-  // const { userId } = request
+  const { userId } = request
 
-  const q =
-    "select u.*, u.id as user_id, p.*, p.id as post_id, p.created_at as post_created_at from posts as p join users as u on p.author_id = u.id;"
+  const q = `
+  SELECT p.*, p.id as post_id, u.profile_pic, u.username
+  FROM posts as p
+  join relationships as r
+  on p.author_id = r.followed_user_id
+  join users as u
+  on u.id = p.author_id
+  where r.follower_user_id = (?)
+`
 
-  connection.query<Query[]>(q, [], (error, posts) => {
+  connection.query<Query[]>(q, [userId], (error, posts) => {
     if (error) return response.status(500).json(error)
     const filteredPosts = posts.map(({ password, ...rest }) => rest)
     return response.status(201).json(filteredPosts)

@@ -7,15 +7,10 @@ interface PrivilegedPageProps {
 }
 
 const PrivilegedPage: React.FC<PrivilegedPageProps> = ({ children, roles }) => {
-  const { userRole } = useLamaAuth()
+  // const { currentUser } = useLamaAuth()
+  const user = JSON.parse(localStorage.getItem("lamaUser") || "{}") || null
 
-  return !userRole ? (
-    <Navigate to="/login" />
-  ) : roles.includes(userRole) ? (
-    children
-  ) : (
-    <div>Você não possui autorização para acessar essa página.</div>
-  )
+  return 'username' in user ? children : <Navigate to="/login" />
 }
 
 export default PrivilegedPage

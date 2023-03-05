@@ -63,7 +63,7 @@ const Posts: React.FC = () => {
   })
 
   const { data: rawPosts } = useQuery<APIPost[]>({
-    queryKey: ["posts"],
+    queryKey: ["posts", currentUser?.id],
     queryFn: () => api.get("/posts").then((response) => response.data),
     staleTime: 1000 * 10,
     onError: console.log,
@@ -90,8 +90,8 @@ const Posts: React.FC = () => {
   return (
     <div className="flex">
       <div className="custom-scroll flex border-x border-x-gray-800">
-        <main className="relative flex grow flex-col justify-between w-[900px]">
-          <section className="flex flex-col chat overflow-auto custom-scroll">
+        <main className="relative flex w-[900px] grow flex-col justify-between">
+          <section className="chat custom-scroll flex flex-col overflow-auto">
             {posts &&
               posts.map((post) => (
                 <Post
@@ -100,9 +100,9 @@ const Posts: React.FC = () => {
                 />
               ))}
           </section>
-          <div className="w-full bg-gray-800 px-4 py-4 gap-2 border-t border-t-black">
+          <div className="w-full gap-2 border-t border-t-black bg-gray-800 px-4 py-4">
             <NewPostInput
-            className=""
+              className=""
               mutate={mutate}
               fieldsParser={postBodySchema}
             />

@@ -1,4 +1,5 @@
 import axios from "axios"
+import { useLamaAuth } from "../_features/LamaAuth/context"
 
 export const api = axios.create({
   baseURL: "http://localhost:3434/api",
@@ -36,9 +37,8 @@ const revalidateAccessToken = (refreshToken: string): Promise<{ accessToken: str
     .then((response) => response.data)
     .catch((error) => {
       if (error.response.data.type === "INVALID_REFRESH_TOKEN" && error.response.status === 401) {
-        axios
-          .post("http://localhost:3434/api/auth/logout", {}, { withCredentials: true })
-          .then(() => (window.location.href = "/login"))
+        const { logout } = useLamaAuth()
+        logout()
       }
       return error
     })

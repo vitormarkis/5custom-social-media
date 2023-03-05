@@ -7,13 +7,13 @@ interface ILamaAuthContext {
   currentUser: IUser | null
   login: (credentials: TLoginCredentials) => Promise<void>
   logout: () => Promise<void>
-  userRole: null
+  userRole?: null
 }
 
 export const LamaAuthContext = createContext({} as ILamaAuthContext)
 
 const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [userRole, setUserRole] = useState<any>("user")
+  // const [userRole, setUserRole] = useState<any>("user")
   const [currentUser, setCurrentUser] = useState<IUser | null>(
     JSON.parse(localStorage.getItem("lamaUser") || "{}") || null
   )
@@ -56,7 +56,6 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     login,
     currentUser,
     logout,
-    userRole,
   }
 
   return (
