@@ -21,7 +21,7 @@ function RootLayout() {
       `${isActive ? "bg-black/20" : ""} ${styleClasses}`
 
   return (
-    <div className="w-screen h-screen max-h-screen bg-gray-900 text-white flex flex-col overflow-auto">
+    <div className="w-screen h-screen max-h-screen bg-gray-900 text-white flex flex-col overflow-y-hidden custom-scroll">
       <header className="w-full bg-gray-800 h-16 flex items-center justify-center border-b border-b-gray-900">
         <main className="p-4 w-full max-w-[1280px] flex justify-between">
           <nav className="flex gap-2">

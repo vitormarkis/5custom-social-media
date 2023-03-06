@@ -20,7 +20,7 @@ export const getPosts: RequestHandler = (request, response) => {
   where r.follower_user_id = (?)
 `
 
-const newQ = `
+  const newQ = `
 select p.*, p.id as post_id, u.profile_pic, u.username
 from posts as p
 left join relationships as r
@@ -49,5 +49,17 @@ export const createPost: RequestHandler = (request, response) => {
   connection.query(q, [parsedPostBody.text, author_id, parsedPostBody.image], error => {
     if (error) return response.status(500).json(error)
     return response.status(201).json({ message: "Post criado com sucesso!" })
+  })
+}
+
+export const getPost: RequestHandler = (request, response) => {
+  const { postId } = request.params
+
+  const q = "select * from posts as p join users as u on u.id = p.author_id where p.id = (?)"
+
+  connection.query(q, [postId], (error, result) => {
+    if (error) return response.status(500).json(error)
+    const post = result[0]
+    return response.status(201).json(post)
   })
 }

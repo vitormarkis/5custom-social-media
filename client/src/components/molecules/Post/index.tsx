@@ -3,16 +3,19 @@ import { Bookmark } from "@styled-icons/bootstrap/Bookmark"
 import { Chat } from "@styled-icons/bootstrap/Chat"
 import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import moment from "moment"
+import { useNavigate } from "react-router-dom"
 import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Props } from "./types"
 
 const Post: React.FC<Props> = ({ post }) => {
   const { currentUser } = useLamaAuth()
   const postCreatedAt = moment(post.post_created_at).fromNow()
+  const navigate = useNavigate()
 
   return (
     <article
       key={post.post_id}
+      onClick={() => navigate('/post/' + post.post_id)}
       className="bg-gray-800 border-b border-b-black flex relative items-start cursor-pointer"
     >
       <div className="w-12 h-full flex flex-col overflow-hidden border-r border-r-black shrink-0">

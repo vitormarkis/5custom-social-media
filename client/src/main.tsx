@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "./index.css"
 import RootLayout from "./Layouts/Root"
 import Login from "./pages/Login"
+import PostPage from "./pages/PostPage"
 import Posts from "./pages/Posts"
 import Profile from "./pages/Profile"
 import queryClient from "./services/queryClient"
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
         element: (
           <PrivilegedPage roles={["user"]}>
             <Posts />
+          </PrivilegedPage>
+        ),
+      },
+      {
+        path: "/post/:postId",
+        element: (
+          <PrivilegedPage roles={["user"]}>
+            <PostPage />
           </PrivilegedPage>
         ),
       },
