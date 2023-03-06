@@ -12,6 +12,22 @@ export const userSchema = z.object({
   website: z.string().url(),
 })
 
+export const followUserSuggestionSchema = userSchema.pick({
+  id: true,
+  name: true,
+  username: true,
+  profile_pic: true,
+}).transform(({ id, name, profile_pic,username }) => ({
+  user_id: id,
+  name,
+  profile_pic,
+  username
+}))
+
+
+export type FollowUserSuggestion = z.output<typeof followUserSuggestionSchema>
+
+
 export const registerCredentialsSchema = userSchema.pick({
   name: true,
   username: true,

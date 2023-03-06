@@ -10,7 +10,7 @@ export const userSchema = z.object({
   cover_pic: z.string().url(),
   city: z.string(),
   website: z.string().url(),
-})
+}) 
 
 export const registerCredentialsSchema = userSchema.pick({
   name: true,
