@@ -1,7 +1,7 @@
 import { RequestHandler } from "express"
 import { RowDataPacket } from "mysql2"
 import { z } from "zod"
-import { postCommentsSchema } from "../schemas/postCommentaries"
+import { postCommentBodySchema, postCommentsSchema } from "../schemas/postComments"
 import { postAPIResponseSchema, postBodySchema } from "../schemas/posts"
 import { connection } from "../services/mysql"
 
@@ -91,5 +91,39 @@ export const getPostComments: RequestHandler = (request, response) => {
     if (error) return response.status(500).json(error)
     const postComments = z.array(postCommentsSchema).parse(result)
     return response.status(201).json(postComments)
+  })
+}
+
+export const createPostComment: RequestHandler = (request, response) => {
+  const { postId } = request.params
+  const q = `select * from posts where id = (?)`
+
+  connection.query<Query[]>(q, [postId], (error, result) => {
+    if (error) return response.status(500).json(error)
+    if (result.length === 0) return response.status(400).json({ message: "Não existe um post com esse id." })
+
+    const { userId } = request
+    const unkCommentBody = {
+      ...request.body,
+      post_id: Number(postId),
+      author_id: Number(userId),
+    }
+    const { author_id, post_id, text } = postCommentBodySchema.parse(unkCommentBody)
+
+    const q = `
+    insert into
+    comments (
+      text, 
+      post_id, 
+      author_id
+    )
+    values
+    (?, ?, ?)
+  `
+
+    connection.query(q, [text, post_id, author_id], error => {
+      if (error) return response.status(500).json(error)
+      return response.status(201).json({ message: "Comentário criado com sucesso!" })
+    })
   })
 }
