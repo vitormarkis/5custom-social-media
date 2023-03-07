@@ -7,4 +7,6 @@ postsRouter.get("/", PostsControllers.getPosts)
 postsRouter.get("/:postId", PostsControllers.getPost)
 postsRouter.post("/", PostsControllers.createPost)
 
+postsRouter.get("/:postId/comments", PostsControllers.getPostComments)
+
 export default postsRouter

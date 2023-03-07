@@ -31,17 +31,6 @@ const Posts: React.FC = () => {
 
   const posts = rawPosts?.sort((a, b) => (a.post_created_at > b.post_created_at ? 1 : -1))
 
-  const followingUsersData = [
-    {
-      follower_user_id: currentUser?.id,
-      followed_user_id: 4,
-    },
-    {
-      follower_user_id: currentUser?.id,
-      followed_user_id: 5,
-    },
-  ]
-
   return (
     <div className="flex">
       <div className="custom-scroll flex border-x border-x-gray-800">

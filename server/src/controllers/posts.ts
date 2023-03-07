@@ -1,11 +1,11 @@
 import { RequestHandler } from "express"
 import { RowDataPacket } from "mysql2"
-import { IPost, postAPIResponseSchema, postBodySchema } from "../schemas/posts"
-import { IUser, TUser } from "../schemas/user"
+import { z } from "zod"
+import { postCommentsSchema } from "../schemas/postCommentaries"
+import { postAPIResponseSchema, postBodySchema } from "../schemas/posts"
 import { connection } from "../services/mysql"
 
-interface Query extends TUser, IPost, RowDataPacket {}
-interface User extends IUser, IPost {}
+type Query = {} & unknown & RowDataPacket
 
 export const getPosts: RequestHandler = (request, response) => {
   const { userId } = request
@@ -21,18 +21,22 @@ export const getPosts: RequestHandler = (request, response) => {
 `
 
   const newQ = `
-select p.*, p.id as post_id, u.profile_pic, u.username
-from posts as p
-left join relationships as r
-on r.followed_user_id = p.author_id and r.follower_user_id = (?)
-join users as u
-on p.author_id = u.id
-where p.author_id = (?) or p.author_id = r.followed_user_id
+    select 
+      p.*, 
+      p.id as post_id, 
+      u.profile_pic, 
+      u.username
+    from posts as p
+    left join relationships as r
+    on r.followed_user_id = p.author_id and r.follower_user_id = (?)
+    join users as u
+    on p.author_id = u.id
+    where p.author_id = (?) or p.author_id = r.followed_user_id
 `
 
   connection.query<Query[]>(newQ, [userId, userId], (error, posts) => {
     if (error) return response.status(500).json(error)
-    const filteredPosts = posts.map(({ password, ...rest }) => postAPIResponseSchema.safeParse(rest).data)
+    const filteredPosts = posts.map(({ password, ...rest }) => postAPIResponseSchema.parse(rest))
     return response.status(201).json(filteredPosts)
   })
 }
@@ -57,9 +61,35 @@ export const getPost: RequestHandler = (request, response) => {
 
   const q = "select * from posts as p join users as u on u.id = p.author_id where p.id = (?)"
 
-  connection.query(q, [postId], (error, result) => {
+  connection.query<any[]>(q, [postId], (error, result) => {
     if (error) return response.status(500).json(error)
     const post = result[0]
     return response.status(201).json(post)
+  })
+}
+
+export const getPostComments: RequestHandler = (request, response) => {
+  const { postId } = request.params
+
+  const q = `
+    SELECT 
+      c.id as commentaryId, 
+      c.text, 
+      c.created_at, 
+      c.author_id, 
+      c.post_id, 
+      u.name, 
+      u.username, 
+      u.profile_pic 
+    FROM comments as c 
+    join users as u 
+    on u.id = c.author_id 
+    where post_id = (?)
+    `
+
+  connection.query<Query[]>(q, [postId], (error, result) => {
+    if (error) return response.status(500).json(error)
+    const postComments = z.array(postCommentsSchema).parse(result)
+    return response.status(201).json(postComments)
   })
 }

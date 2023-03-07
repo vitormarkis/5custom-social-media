@@ -20,8 +20,8 @@ api.interceptors.response.use(
         return await api(originalRequest)
       } catch (error: any) {
         if (error.response.status === 401 && error.response.data.type === "INVALID_REFRESH_TOKEN") {
-          await axios.post("http://localhost:3434/api/auth/logout", {}, { withCredentials: true })
           window.location.href = "/login"
+          await axios.post("http://localhost:3434/api/auth/logout", {}, { withCredentials: true })
         }
         return Promise.reject(error)
       }
