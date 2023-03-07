@@ -18,7 +18,7 @@ function NewPostInput<T extends FieldValues, F extends ZodRawShape>({
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
-      className={"flex flex-row rounded-xl overflow-hidden border-2 border-black" + className}
+      className={"flex flex-row rounded-xl overflow-hidden border-4 border-black " + className ?? ''}
       {...rest}
     >
       <textarea
