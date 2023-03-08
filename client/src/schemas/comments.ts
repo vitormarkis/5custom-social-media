@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { userSchema } from "../_features/LamaAuth/schemas"
 import { postSchema } from "./posts"
+import { userSchema } from "./schemas"
 
 export const commentsSchema = z.object({
   comment_id: z.number(),

@@ -6,9 +6,8 @@ import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Cursor } from "@styled-icons/bootstrap/Cursor"
 import { CursorFill } from "@styled-icons/bootstrap/CursorFill"
 import { IRelationShipToggle } from "../../../schemas/relationships"
+import { followUserSuggestionSchema } from "../../../schemas/schemas"
 import queryClient from "../../../services/queryClient"
-import { FollowUserSuggestion } from "../../../schemas/users"
-import { followUserSuggestionSchema } from "../../../_features/LamaAuth/schemas"
 
 const FollowSuggestion: React.FC = () => {
   const { currentUser } = useLamaAuth()
@@ -21,11 +20,11 @@ const FollowSuggestion: React.FC = () => {
 
   const { data: allUsers } = useQuery<unknown[]>({
     queryKey: ["all_users"],
-    queryFn: async () => api.get("/users/all").then(res => res.data),
+    queryFn: async () => api.get("/users/all").then((res) => res.data),
     staleTime: 1000 * 60, // 1 minuto
   })
 
-  const followUsers = allUsers?.map(user => followUserSuggestionSchema.parse(user))
+  const followUsers = allUsers?.map((user) => followUserSuggestionSchema.parse(user))
   console.log(followUsers)
 
   const { mutate } = useMutation({

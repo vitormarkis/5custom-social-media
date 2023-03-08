@@ -5,23 +5,24 @@ import { Chat } from "@styled-icons/bootstrap/Chat"
 import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import moment from "moment"
 import { useNavigate } from "react-router-dom"
+import { ILikedPost, IPostLikes } from "../../../schemas/post_likes"
 import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Props } from "./types"
 
-const apiresponse = [
+const apiresponse: IPostLikes[] = [
   {
     post_like_id: 1,
     user_id: 1,
-    post_id: 24
+    post_id: 24,
   },
   {
     post_like_id: 2,
     user_id: 1,
-    post_id: 20
+    post_id: 20,
   },
 ]
 
-const likedPosts = apiresponse.reduce((acc: number[], item) => {
+const likedPosts: ILikedPost[] = apiresponse.reduce((acc: ILikedPost[], item) => {
   acc.push(item.post_id)
   return acc
 }, [])
@@ -43,8 +44,8 @@ const Post: React.FC<Props> = ({ post }) => {
           src={post.profile_pic}
         />
       </div>
-      <div className="flex flex-col items-start p-2 w-full">
-        <div className="flex grow items-center gap-2 w-full">
+      <div className="flex w-full flex-col items-start p-2">
+        <div className="flex w-full grow items-center gap-2">
           <div>
             {post.username === currentUser?.username ? (
               <p className=" font-semibold text-emerald-400">{post.username}</p>
@@ -54,7 +55,9 @@ const Post: React.FC<Props> = ({ post }) => {
           </div>
           <div className="flex grow">
             <p className="text-xs italic text-gray-500">{post.post_created_at && postCreatedAt}</p>
-            <p className="text-xs italic text-gray-500 ml-auto">{post.comments_amount} {post.comments_amount === 1 ? "comentário" : "comentários"}</p>
+            <p className="ml-auto text-xs italic text-gray-500">
+              {post.comments_amount} {post.comments_amount === 1 ? "comentário" : "comentários"}
+            </p>
           </div>
         </div>
         <div className="">

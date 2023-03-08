@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import { createContext, useContext, useEffect, useState } from "react"
+import { IUser, loginCredentialsSchema, TLoginCredentials } from "../../schemas/schemas"
 import { api } from "../../services/axios"
-import { IUser, loginCredentialsSchema, TLoginCredentials } from "./schemas"
 
 interface ILamaAuthContext {
   currentUser: IUser | null

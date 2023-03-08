@@ -1,10 +1,8 @@
-import { useContext } from "react"
 import { useForm } from "react-hook-form"
 import { SubmitHandler } from "react-hook-form/dist/types"
 import { useNavigate } from "react-router-dom"
-import { AuthContext } from "../_features/Auth/context"
+import { loginCredentialsSchema, TLoginCredentials } from "../schemas/schemas"
 import { useLamaAuth } from "../_features/LamaAuth/context"
-import { loginCredentialsSchema, TLoginCredentials } from "../_features/LamaAuth/schemas"
 
 const Login: React.FC = () => {
   const { register, handleSubmit } = useForm<TLoginCredentials>()
@@ -27,30 +25,30 @@ const Login: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
-      className="p-6 rounded-2xl mx-auto my-14 w-[420px] bg-gray-800 flex flex-col gap-4"
+      className="mx-auto my-14 flex w-[420px] flex-col gap-4 rounded-2xl bg-gray-800 p-6"
     >
       <div>
         <h1 className="text-xl font-semibold">👇 Entrar</h1>
         <h3 className="text-sm text-gray-500">Faça login para continuar.</h3>
       </div>
       <input
-      autoComplete="off"
+        autoComplete="off"
         type="text"
         {...register("username")}
         placeholder="Digite seu username..."
-        className="p-3 rounded-lg border-2 border-black bg-gray-700"
+        className="rounded-lg border-2 border-black bg-gray-700 p-3"
       />
       <input
-      autoComplete="off"
+        autoComplete="off"
         type="password"
         {...register("password")}
         placeholder="Digite sua senha..."
-        className="p-3 rounded-lg border-2 border-black bg-gray-700"
+        className="rounded-lg border-2 border-black bg-gray-700 p-3"
       />
 
       <button
         type="submit"
-        className="p-3 rounded-lg border-2 border-black bg-green-600"
+        className="rounded-lg border-2 border-black bg-green-600 p-3"
       >
         Enviar
       </button>

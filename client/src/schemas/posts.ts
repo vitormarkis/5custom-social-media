@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { userSchema } from "../_features/LamaAuth/schemas"
+import { userSchema } from "./schemas"
 export const postBodySchema = z.object({
   text: z.string().max(449),
   image: z.string().url().optional(),
@@ -13,12 +13,14 @@ export const postSchema = z.object({
   created_at: z.string().transform((createdAt) => new Date(createdAt)),
 })
 
-export const postPageSchema = userSchema.pick({
-  id: true,
-  name: true,
-  username: true,
-  profile_pic: true,
-}).merge(postSchema)
+export const postPageSchema = userSchema
+  .pick({
+    id: true,
+    name: true,
+    username: true,
+    profile_pic: true,
+  })
+  .merge(postSchema)
 
 export type IPostPage = z.infer<typeof postPageSchema>
 

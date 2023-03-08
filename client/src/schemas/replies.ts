@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { userSchema } from "../_features/LamaAuth/schemas"
+import { userSchema } from "./schemas"
 
 /**
  * GENERAL
@@ -31,7 +31,7 @@ export const commentReplyBodySchema = z.object({
 })
 
 export const commentReplyFieldsSchema = commentReplyBodySchema.pick({
-  text: true
+  text: true,
 })
 
 export const commentReplyPayloadBodySchema = commentReplyBodySchema.pick({
@@ -39,6 +39,6 @@ export const commentReplyPayloadBodySchema = commentReplyBodySchema.pick({
   comment_id: true,
 })
 
-export type ICommentReplyFields = z.infer<typeof commentReplyFieldsSchema> 
-export type ICommentReplyBody = z.infer<typeof commentReplyPayloadBodySchema> 
-export type IPostCommentReply = z.infer<typeof postCommentReplySchema> 
+export type ICommentReplyFields = z.infer<typeof commentReplyFieldsSchema>
+export type ICommentReplyBody = z.infer<typeof commentReplyPayloadBodySchema>
+export type IPostCommentReply = z.infer<typeof postCommentReplySchema>
