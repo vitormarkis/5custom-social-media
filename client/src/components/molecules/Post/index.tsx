@@ -1,11 +1,30 @@
 import * as Popover from "@radix-ui/react-popover"
 import { Bookmark } from "@styled-icons/bootstrap/Bookmark"
+import { BookmarkFill } from "@styled-icons/bootstrap/BookmarkFill"
 import { Chat } from "@styled-icons/bootstrap/Chat"
 import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import moment from "moment"
 import { useNavigate } from "react-router-dom"
 import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Props } from "./types"
+
+const apiresponse = [
+  {
+    post_like_id: 1,
+    user_id: 1,
+    post_id: 24
+  },
+  {
+    post_like_id: 2,
+    user_id: 1,
+    post_id: 20
+  },
+]
+
+const likedPosts = apiresponse.reduce((acc: number[], item) => {
+  acc.push(item.post_id)
+  return acc
+}, [])
 
 const Post: React.FC<Props> = ({ post }) => {
   const { currentUser } = useLamaAuth()
@@ -49,7 +68,7 @@ const Post: React.FC<Props> = ({ post }) => {
 
       <div className="ml-auto flex h-full flex-col justify-around border-l border-l-gray-900">
         <div className="flex grow items-center justify-center border-b border-b-gray-900 px-2 py-2">
-          <Bookmark height={16} />
+          {likedPosts.includes(post.post_id) ? <BookmarkFill height={16} /> : <Bookmark height={16} />}
         </div>
         <div className="flex grow items-center justify-center border-b border-b-gray-900 px-2 py-2">
           <Chat height={16} />
