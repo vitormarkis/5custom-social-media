@@ -3,6 +3,7 @@ import { RowDataPacket } from "mysql2"
 import { z } from "zod"
 import { postCommentBodySchema, postCommentSchema } from "../schemas/postComments"
 import { postAPIResponseSchema, postBodySchema } from "../schemas/posts"
+import { postLikesSchema } from "../schemas/post_likes"
 import {
   commentReplyBodySchema,
   commentReplyGetSchema,
@@ -48,6 +49,21 @@ export const getPosts: RequestHandler = (request, response) => {
     if (error) return response.status(500).json(error)
     const filteredPosts = posts.map(({ password, ...rest }) => postAPIResponseSchema.parse(rest))
     return response.status(201).json(filteredPosts)
+  })
+}
+
+export const getLikedPosts: RequestHandler = (request, response) => {
+  const { userId } = request
+  const q = `
+  select id as post_like_id, user_id, post_id
+  from post_likes
+  where user_id = (?);
+  `
+
+  connection.query<Query[]>(q, [userId], (error, result) => {
+    if (error) return response.status(500).json(error)
+    const likedPosts = z.array(postLikesSchema).parse(result)
+    return response.status(200).json(likedPosts)
   })
 }
 
