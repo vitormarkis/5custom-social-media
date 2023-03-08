@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form"
 import { SubmitHandler } from "react-hook-form/dist/types"
 import { useNavigate } from "react-router-dom"
-import { loginCredentialsSchema, TLoginCredentials } from "../schemas/schemas"
+import { loginCredentialsSchema, TLoginCredentials } from "../schemas/users"
 import { useLamaAuth } from "../_features/LamaAuth/context"
 
 const Login: React.FC = () => {

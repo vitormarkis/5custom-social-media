@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios"
 import { createContext, useContext, useEffect, useState } from "react"
-import { IUser, loginCredentialsSchema, TLoginCredentials } from "../../schemas/schemas"
+import { IUser, loginCredentialsSchema, TLoginCredentials } from "../../schemas/users"
 import { api } from "../../services/axios"
 
 interface ILamaAuthContext {

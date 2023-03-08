@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { postSchema } from "./posts"
-import { userSchema } from "./user"
+import { userSchema } from "./users"
 
 export const postLikesSchema = z.object({
   post_like_id: z.number().positive(),

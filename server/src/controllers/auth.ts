@@ -3,7 +3,7 @@ import { RequestHandler } from "express"
 import jwt from "jsonwebtoken"
 import { RowDataPacket } from "mysql2"
 import { ENCookies, ENToken } from "../constants/secret"
-import { loginCredentialsSchema, registerCredentialsSchema, TUser } from "../schemas/user"
+import { loginCredentialsSchema, registerCredentialsSchema, TUser } from "../schemas/users"
 import { connection } from "../services/mysql"
 
 interface IRefreshToken {

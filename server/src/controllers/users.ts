@@ -1,7 +1,7 @@
 import { RequestHandler } from "express"
 import { RowDataPacket } from "mysql2"
 import { relationShipToggleSchema } from "../schemas/relationships"
-import { TUser } from "../schemas/user"
+import { TUser } from "../schemas/users"
 import { connection } from "../services/mysql"
 import { IRelationshipsId } from "../types/relationships"
 

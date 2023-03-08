@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { userSchema } from "./user"
+import { userSchema } from "./users"
 
 /**
  * GENERAL
@@ -36,5 +36,5 @@ export const commentReplyRequestBodySchema = commentReplyBodySchema.pick({
 })
 
 export const commentReplyGetSchema = commentReplySchema.pick({
-  comment_id: true
+  comment_id: true,
 })

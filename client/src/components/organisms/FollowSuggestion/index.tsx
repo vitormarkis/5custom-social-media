@@ -6,7 +6,7 @@ import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Cursor } from "@styled-icons/bootstrap/Cursor"
 import { CursorFill } from "@styled-icons/bootstrap/CursorFill"
 import { IRelationShipToggle } from "../../../schemas/relationships"
-import { followUserSuggestionSchema } from "../../../schemas/schemas"
+import { followUserSuggestionSchema } from "../../../schemas/users"
 import queryClient from "../../../services/queryClient"
 
 const FollowSuggestion: React.FC = () => {

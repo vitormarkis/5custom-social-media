@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { postSchema } from "./posts"
-import { userSchema } from "./schemas"
+import { userSchema } from "./users"
 
 export const commentsSchema = z.object({
   comment_id: z.number(),

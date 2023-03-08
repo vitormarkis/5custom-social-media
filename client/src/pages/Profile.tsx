@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import Spinner from "../components/Spinner"
-import { IUser } from "../schemas/schemas"
+import { IUser } from "../schemas/users"
 import { api } from "../services/axios"
 import { useLamaAuth } from "../_features/LamaAuth/context"
 

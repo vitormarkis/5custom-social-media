@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { userSchema } from "./user"
+import { userSchema } from "./users"
 
 export const postBodySchema = z.object({
   text: z.string().max(449),
@@ -12,7 +12,7 @@ export const postSchema = z.object({
   image: z.string().url().optional(),
   author_id: z.number().positive(),
   created_at: z.date(),
-  comments_amount: z.number()
+  comments_amount: z.number(),
 })
 
 export const postAPIResponseSchema = postSchema

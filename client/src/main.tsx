@@ -10,9 +10,8 @@ import PostPage from "./pages/PostPage"
 import Posts from "./pages/Posts"
 import Profile from "./pages/Profile"
 import queryClient from "./services/queryClient"
-import AuthProvider from "./_features/Auth/context"
-import PrivilegedPage from "./_features/Auth/PrivilegedPage"
 import LamaAuth from "./_features/LamaAuth/context"
+import PrivilegedPage from "./_features/LamaAuth/PrivilegedPage"
 
 const router = createBrowserRouter([
   {
@@ -26,7 +25,7 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: (
-          <PrivilegedPage roles={["user"]}>
+          <PrivilegedPage>
             <Profile />
           </PrivilegedPage>
         ),
@@ -34,7 +33,7 @@ const router = createBrowserRouter([
       {
         path: "/posts",
         element: (
-          <PrivilegedPage roles={["user"]}>
+          <PrivilegedPage>
             <Posts />
           </PrivilegedPage>
         ),
@@ -42,7 +41,7 @@ const router = createBrowserRouter([
       {
         path: "/post/:postId",
         element: (
-          <PrivilegedPage roles={["user"]}>
+          <PrivilegedPage>
             <PostPage />
           </PrivilegedPage>
         ),
@@ -59,9 +58,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <LamaAuth>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </LamaAuth>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

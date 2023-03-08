@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { userSchema } from "./schemas"
+import { userSchema } from "./users"
 export const postBodySchema = z.object({
   text: z.string().max(449),
   image: z.string().url().optional(),

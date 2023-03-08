@@ -3,34 +3,44 @@ import { Bookmark } from "@styled-icons/bootstrap/Bookmark"
 import { BookmarkFill } from "@styled-icons/bootstrap/BookmarkFill"
 import { Chat } from "@styled-icons/bootstrap/Chat"
 import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
+import { useQuery } from "@tanstack/react-query"
 import moment from "moment"
 import { useNavigate } from "react-router-dom"
-import { ILikedPost, IPostLikes } from "../../../schemas/post_likes"
+import { z } from "zod"
+import { likedPostSchema, postLikesSchema } from "../../../schemas/post_likes"
+import { api } from "../../../services/axios"
 import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Props } from "./types"
 
-const apiresponse: IPostLikes[] = [
-  {
-    post_like_id: 1,
-    user_id: 1,
-    post_id: 24,
-  },
-  {
-    post_like_id: 2,
-    user_id: 1,
-    post_id: 20,
-  },
-]
+// const apiresponse: IPostLikes[] = [
+//   {
+//     post_like_id: 1,
+//     user_id: 1,
+//     post_id: 24,
+//   },
+//   {
+//     post_like_id: 2,
+//     user_id: 1,
+//     post_id: 20,
+//   },
+// ]
 
-const likedPosts: ILikedPost[] = apiresponse.reduce((acc: ILikedPost[], item) => {
-  acc.push(item.post_id)
-  return acc
-}, [])
+// const likedPosts: ILikedPost[] = apiresponse.reduce((acc: ILikedPost[], item) => {
+//   acc.push(item.post_id)
+//   return acc
+// }, [])
 
 const Post: React.FC<Props> = ({ post }) => {
-  const { currentUser } = useLamaAuth()
+  const { currentUser: me } = useLamaAuth()
   const postCreatedAt = moment(post.post_created_at).fromNow()
   const navigate = useNavigate()
+
+  const { data: likedPosts } = useQuery({
+    queryKey: ["post-likes", me?.id],
+    queryFn: () => api.get("/posts/liked-posts").then((res) => z.array(postLikesSchema).parse(res.data)),
+    staleTime: 1000 * 60, // 1 minuto
+    select: (likedPosts) => likedPostSchema.parse(likedPosts),
+  })
 
   return (
     <article
@@ -47,7 +57,7 @@ const Post: React.FC<Props> = ({ post }) => {
       <div className="flex w-full flex-col items-start p-2">
         <div className="flex w-full grow items-center gap-2">
           <div>
-            {post.username === currentUser?.username ? (
+            {post.username === me?.username ? (
               <p className=" font-semibold text-emerald-400">{post.username}</p>
             ) : (
               <p className=" text-gray-200">{post.username}</p>
@@ -61,7 +71,7 @@ const Post: React.FC<Props> = ({ post }) => {
           </div>
         </div>
         <div className="">
-          {post.username === currentUser?.username ? (
+          {post.username === me?.username ? (
             <p className="">{post.text}</p>
           ) : (
             <p className=" text-gray-400">{post.text}</p>
@@ -71,7 +81,15 @@ const Post: React.FC<Props> = ({ post }) => {
 
       <div className="ml-auto flex h-full flex-col justify-around border-l border-l-gray-900">
         <div className="flex grow items-center justify-center border-b border-b-gray-900 px-2 py-2">
-          {likedPosts.includes(post.post_id) ? <BookmarkFill height={16} /> : <Bookmark height={16} />}
+          {likedPosts ? (
+            likedPosts?.includes(post.post_id) ? (
+              <BookmarkFill height={16} />
+            ) : (
+              <Bookmark height={16} />
+            )
+          ) : (
+            <Bookmark height={16} />
+          )}
         </div>
         <div className="flex grow items-center justify-center border-b border-b-gray-900 px-2 py-2">
           <Chat height={16} />
