@@ -15,26 +15,27 @@ const Post: React.FC<Props> = ({ post }) => {
   return (
     <article
       key={post.post_id}
-      onClick={() => navigate('/post/' + post.post_id)}
-      className="bg-gray-800 border-b border-b-black flex relative items-start cursor-pointer"
+      onClick={() => navigate("/post/" + post.post_id)}
+      className="relative flex cursor-pointer items-start border-b border-b-black bg-gray-800"
     >
-      <div className="w-12 h-full flex flex-col overflow-hidden border-r border-r-black shrink-0">
+      <div className="flex h-full w-12 shrink-0 flex-col overflow-hidden border-r border-r-black">
         <img
           className="block w-full grow object-cover"
           src={post.profile_pic}
         />
       </div>
-      <div className="flex flex-col items-start p-2">
-        <div className="grow flex items-center justify-center gap-2">
+      <div className="flex flex-col items-start p-2 w-full">
+        <div className="flex grow items-center gap-2 w-full">
           <div>
             {post.username === currentUser?.username ? (
-              <p className=" text-emerald-400 font-semibold">{post.username}</p>
+              <p className=" font-semibold text-emerald-400">{post.username}</p>
             ) : (
               <p className=" text-gray-200">{post.username}</p>
             )}
           </div>
-          <div>
+          <div className="flex grow">
             <p className="text-xs italic text-gray-500">{post.post_created_at && postCreatedAt}</p>
+            <p className="text-xs italic text-gray-500 ml-auto">{post.comments_amount} {post.comments_amount === 1 ? "comentário" : "comentários"}</p>
           </div>
         </div>
         <div className="">
@@ -46,16 +47,16 @@ const Post: React.FC<Props> = ({ post }) => {
         </div>
       </div>
 
-      <div className="ml-auto border-l border-l-gray-900 h-full flex flex-col justify-around">
-        <div className="px-2 py-2 grow flex items-center justify-center border-b border-b-gray-900">
+      <div className="ml-auto flex h-full flex-col justify-around border-l border-l-gray-900">
+        <div className="flex grow items-center justify-center border-b border-b-gray-900 px-2 py-2">
           <Bookmark height={16} />
         </div>
-        <div className="px-2 py-2 grow flex items-center justify-center border-b border-b-gray-900">
+        <div className="flex grow items-center justify-center border-b border-b-gray-900 px-2 py-2">
           <Chat height={16} />
         </div>
         <Popover.Root>
           <Popover.Trigger asChild>
-            <div className="px-2 py-2 grow flex items-center justify-center">
+            <div className="flex grow items-center justify-center px-2 py-2">
               <ThreeDots height={16} />
             </div>
           </Popover.Trigger>
@@ -63,15 +64,15 @@ const Post: React.FC<Props> = ({ post }) => {
             asChild
             align="end"
           >
-            <div className="py-1 px-1 bg-slate-700 rounded-lg z-30">
+            <div className="z-30 rounded-lg bg-slate-700 py-1 px-1">
               <button
-                className="w-full py-0.5 px-2 hover:bg-slate-600 hover:text-white text-gray-400 rounded-md flex gap-2 items-center"
+                className="flex w-full items-center gap-2 rounded-md py-0.5 px-2 text-gray-400 hover:bg-slate-600 hover:text-white"
                 // onClick={handleLogoutButton}
               >
                 <p>Editar</p>
               </button>
               <button
-                className="w-full py-0.5 px-2 hover:bg-slate-600 hover:text-white text-gray-400 rounded-md flex gap-2 items-center"
+                className="flex w-full items-center gap-2 rounded-md py-0.5 px-2 text-gray-400 hover:bg-slate-600 hover:text-white"
                 // onClick={handleLogoutButton}
               >
                 <p>Excluir</p>

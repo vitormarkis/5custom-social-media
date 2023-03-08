@@ -10,4 +10,7 @@ postsRouter.post("/", PostsControllers.createPost)
 postsRouter.get("/:postId/comments", PostsControllers.getPostComments)
 postsRouter.post("/:postId/comments", PostsControllers.createPostComment)
 
+postsRouter.post("/:postId/comments/replies", PostsControllers.getPostCommentReplies)
+postsRouter.post("/:postId/comments/replies/create", PostsControllers.createPostCommentReply)
+
 export default postsRouter

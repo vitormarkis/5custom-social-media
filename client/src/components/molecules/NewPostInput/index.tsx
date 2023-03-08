@@ -1,30 +1,24 @@
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form"
-import { ZodRawShape } from "zod"
+import { SubmitHandler, useForm } from "react-hook-form"
 import { NewPostInputProps } from "./types"
 
-function NewPostInput<T extends FieldValues, F extends ZodRawShape>({
-  mutate,
-  fieldsParser,
-  className,
-  ...rest
-}: NewPostInputProps<T, F>) {
+function NewPostInput({ mutate, fieldsParser, className, placeholder, ...rest }: NewPostInputProps) {
   const { register, handleSubmit, reset } = useForm<any>()
 
-  const submitHandler: SubmitHandler<T> = (formData) => {
-    const parsedFormData = fieldsParser.parse(formData) as T
-    mutate(parsedFormData)
+  const submitHandler: SubmitHandler<any> = (formData) => {
+    const parsedFormData = fieldsParser.parse(formData) as any
+    mutate(parsedFormData, { onSuccess: () => reset() })
   }
 
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
-      className={"flex flex-row rounded-xl overflow-hidden border-4 border-black " + className ?? ''}
+      className={"flex h-full w-full flex-row overflow-hidden rounded-xl " + className ?? ""}
       {...rest}
     >
       <textarea
         {...register("text")}
-        placeholder="Fale um pouco sobre o que você está pensando..."
-        className="block h-32 w-full resize-none  bg-gray-700 p-3 custom-scroll"
+        placeholder={placeholder}
+        className="custom-scroll block w-full  resize-none bg-gray-700 p-3"
       />
       <button
         type="submit"

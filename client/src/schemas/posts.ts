@@ -1,6 +1,5 @@
 import { z } from "zod"
 import { userSchema } from "../_features/LamaAuth/schemas"
-
 export const postBodySchema = z.object({
   text: z.string().max(449),
   image: z.string().url().optional(),

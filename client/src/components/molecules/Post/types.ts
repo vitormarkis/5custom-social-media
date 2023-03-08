@@ -5,6 +5,7 @@ export interface APIPost {
   text: string
   post_created_at: Date
   post_author_id: number
+  comments_amount: number
 }
 
 export interface Props {

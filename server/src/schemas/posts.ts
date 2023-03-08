@@ -12,6 +12,7 @@ export const postSchema = z.object({
   image: z.string().url().optional(),
   author_id: z.number().positive(),
   created_at: z.date(),
+  comments_amount: z.number()
 })
 
 export const postAPIResponseSchema = postSchema
@@ -23,14 +24,16 @@ export const postAPIResponseSchema = postSchema
     author_id: true,
     username: true,
     profile_pic: true,
+    comments_amount: true,
   })
-  .transform(({ profile_pic, text, username, ...rest }) => ({
+  .transform(({ profile_pic, text, username, comments_amount, ...rest }) => ({
     post_author_id: rest.author_id,
     post_created_at: rest.created_at,
     post_id: rest.id,
     profile_pic,
     text,
     username,
+    comments_amount,
   }))
 
 export type IPostInput = z.input<typeof postSchema>

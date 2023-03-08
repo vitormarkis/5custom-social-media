@@ -1,8 +1,14 @@
 import { RequestHandler } from "express"
 import { RowDataPacket } from "mysql2"
 import { z } from "zod"
-import { postCommentBodySchema, postCommentsSchema } from "../schemas/postComments"
+import { postCommentBodySchema, postCommentSchema } from "../schemas/postComments"
 import { postAPIResponseSchema, postBodySchema } from "../schemas/posts"
+import {
+  commentReplyBodySchema,
+  commentReplyGetSchema,
+  commentReplyRequestBodySchema,
+  postCommentReplySchema,
+} from "../schemas/replies"
 import { connection } from "../services/mysql"
 
 type Query = {} & unknown & RowDataPacket
@@ -24,15 +30,19 @@ export const getPosts: RequestHandler = (request, response) => {
     select 
       p.*, 
       p.id as post_id, 
-      u.profile_pic, 
-      u.username
+      a.profile_pic, 
+      a.username,
+      count(c.id) as comments_amount
     from posts as p
     left join relationships as r
     on r.followed_user_id = p.author_id and r.follower_user_id = (?)
-    join users as u
-    on p.author_id = u.id
+    join users as a
+    on p.author_id = a.id
+    left join comments as c
+    on c.post_id = p.id
     where p.author_id = (?) or p.author_id = r.followed_user_id
-`
+    group by p.id
+  `
 
   connection.query<Query[]>(newQ, [userId, userId], (error, posts) => {
     if (error) return response.status(500).json(error)
@@ -59,7 +69,15 @@ export const createPost: RequestHandler = (request, response) => {
 export const getPost: RequestHandler = (request, response) => {
   const { postId } = request.params
 
-  const q = "select * from posts as p join users as u on u.id = p.author_id where p.id = (?)"
+  const q = `
+    select p.*, u.*, count(c.id) as comments_amount
+    from posts as p 
+    join users as u 
+    on u.id = p.author_id 
+    join comments as c 
+    on c.post_id = p.id 
+    where p.id = (?)
+  `
 
   connection.query<any[]>(q, [postId], (error, result) => {
     if (error) return response.status(500).json(error)
@@ -73,7 +91,7 @@ export const getPostComments: RequestHandler = (request, response) => {
 
   const q = `
     SELECT 
-      c.id as commentaryId, 
+      c.id as comment_id, 
       c.text, 
       c.created_at, 
       c.author_id, 
@@ -89,7 +107,7 @@ export const getPostComments: RequestHandler = (request, response) => {
 
   connection.query<Query[]>(q, [postId], (error, result) => {
     if (error) return response.status(500).json(error)
-    const postComments = z.array(postCommentsSchema).parse(result)
+    const postComments = z.array(postCommentSchema).parse(result)
     return response.status(201).json(postComments)
   })
 }
@@ -124,6 +142,81 @@ export const createPostComment: RequestHandler = (request, response) => {
     connection.query(q, [text, post_id, author_id], error => {
       if (error) return response.status(500).json(error)
       return response.status(201).json({ message: "Comentário criado com sucesso!" })
+    })
+  })
+}
+
+export const createPostCommentReply: RequestHandler = (request, response) => {
+  const userId = request.userId!
+  const unkBody = commentReplyRequestBodySchema.parse(request.body)
+  const { author_id, comment_id, text } = commentReplyBodySchema.parse({
+    ...unkBody,
+    author_id: +userId,
+  })
+
+  const q = `
+    select *
+    from comments
+    where id = (?);
+  `
+
+  connection.query<Query[]>(q, [comment_id], (error, result) => {
+    if (error) return response.status(500).json(error)
+    if (result.length === 0)
+      return response.status(404).json({ message: "Não existe nenhum comentário com esse id." })
+
+    const q = `
+      insert into replies (
+        text,
+        comment_id,
+        author_id
+      )
+      values
+      (?, ?, ?)
+     `
+
+    connection.query(q, [text, comment_id, author_id], error => {
+      if (error) return response.status(500).json(error)
+      return response.status(201).json({ message: "Resposta criada com sucesso!" })
+    })
+  })
+}
+
+export const getPostCommentReplies: RequestHandler = (request, response) => {
+  const unkBody = request.body
+  const { comment_id } = commentReplyGetSchema.parse(unkBody)
+  // console.log({ unkBody, comment_id })
+
+  const q = `
+    select *
+    from comments
+    where id = (?);
+  `
+
+  connection.query<Query[]>(q, [comment_id], (error, result) => {
+    if (error) return response.status(500).json(error)
+    if (result.length === 0) {
+      return response.status(404).json({ message: "Não existe nenhum comentário com esse id." })
+    }
+    console.log({ result })
+
+    const q = `select 
+      r.id as reply_id, 
+        r.text, 
+        r.created_at,
+        r.author_id,
+        a.name,
+        a.profile_pic
+      from replies as r
+      join users as a
+      on r.author_id = a.id
+      where r.comment_id = (?)
+    `
+
+    connection.query<Query[]>(q, [comment_id], (error, result) => {
+      if (error) return response.status(500).json(error)
+      const reply = z.array(postCommentReplySchema).parse(result)
+      return response.status(201).json(reply)
     })
   })
 }

@@ -1,44 +1,50 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import moment from "moment"
+import { useState } from "react"
+import { SubmitHandler, useForm } from "react-hook-form"
 import { useParams } from "react-router-dom"
 import NewPostInput from "../components/molecules/NewPostInput"
-import { IPostComment, postCommentBodySchema } from "../schemas/comments"
+import { IPostComment, IPostCommentBody, postCommentBodySchema, replyBodySchema } from "../schemas/comments"
 import { postPageSchema } from "../schemas/posts"
+import { commentReplyFieldsSchema, commentReplyPayloadBodySchema, ICommentReplyBody, ICommentReplyFields, IPostCommentReply, postCommentReplySchema } from "../schemas/replies"
 import { api } from "../services/axios"
 import queryClient from "../services/queryClient"
+import { z } from "zod"
+import Replies from "../components/organisms/Replies"
 
-// const commentaries = [
-//   {
-//     commentaryId: 1,
-//     postId: 10,
-//     text: "Muito legal!",
-//     created_at: "2023-03-06 15:20:04",
-//     profile_pic: "https://criticalhits.com.br/wp-content/uploads/2022/03/goku_an6e.h720.webp",
-//     name: "Kauê Souza",
-//     username: "kcsouza",
-//   },
-//   {
-//     commentaryId: 2,
-//     postId: 10,
-//     text: "Nunca tinha parado para pensar sobre isso!",
-//     created_at: "2023-03-05 15:20:04",
-//     profile_pic: "https://criticalhits.com.br/wp-content/uploads/2022/03/goku_an6e.h720.webp",
-//     name: "Kauê Souza",
-//     username: "kcsouza",
-//   },
-//   {
-//     commentaryId: 3,
-//     postId: 10,
-//     text: "Top",
-//     created_at: "2023-03-06 10:05:04",
-//     profile_pic: "https://img.quizur.com/f/img60d0d76e470cb8.51574981.jpg?lastEdited=1624299378",
-//     name: "Leonardo Schell",
-//     username: "leoschell",
-//   },
-// ]
+interface IReplyBody {
+  text: string
+}
+
+const replies = [
+  {
+    author_id: 2,
+    name: "Kauan Barts",
+    created_at: "2023-03-06 21:30:22",
+    text: "Só respondendo para dizer que discordo!",
+    profile_pic:
+      "https://1.bp.blogspot.com/-rwEdYIDEKQY/X52lu3v7-lI/AAAAAAAADbo/cZjgiCDgdpk6xQQpnJjmtJPRUZ-TDhgEwCLcBGAsYHQ/s500/ecfaf90f3d9128e0a9995af74f52770c.jpg",
+    reply_id: 1,
+    comment_id: 4,
+  },
+  {
+    author_id: 3,
+    name: "Leonardo Schell",
+    created_at: "2023-03-06 21:31:22",
+    text: "Nada a ver Kauan",
+    profile_pic: "https://img.quizur.com/f/img60d0d76e470cb8.51574981.jpg?lastEdited=1624299378",
+    reply_id: 2,
+    comment_id: 4,
+  },
+]
 
 const PostPage: React.FC = () => {
+  const [commentingId, setCommentingId] = useState<number | null>(null)
   const { postId } = useParams()
+
+  const handleReplyComment = (commentaryId: number) => {
+    setCommentingId((old) => (old === commentaryId ? null : commentaryId))
+  }
 
   const { data: rawPost } = useQuery<unknown>({
     queryKey: ["post", postId],
@@ -46,13 +52,13 @@ const PostPage: React.FC = () => {
     staleTime: 1000 * 60, // 1 minuto
   })
 
-  const { data: commentaries } = useQuery<IPostComment[]>({
+  const { data: rawCommentaries } = useQuery<IPostComment[]>({
     queryKey: ["postComments", postId],
     queryFn: () => api.get(`/posts/${postId}/comments`).then((res) => res.data),
     staleTime: 1000 * 60,
   })
 
-  const { mutate } = useMutation({
+  const { mutate: mutateAddNewComment } = useMutation<IPostCommentBody>({
     mutationFn: async (commentBody) => {
       return api.post(`/posts/${postId}/comments`, commentBody)
     },
@@ -61,6 +67,7 @@ const PostPage: React.FC = () => {
 
   const parsedPost = rawPost ? postPageSchema.safeParse(rawPost) : null
   const post = parsedPost?.success ? parsedPost.data : null
+  const commentaries = rawCommentaries?.sort((a, b) => (a.created_at > b.created_at ? 1 : -1))
 
   return (
     <div className="mt-6 px-6">
@@ -91,44 +98,54 @@ const PostPage: React.FC = () => {
             )}
           </div>
           <div className="">
-            <div className="flex flex-col gap-2">
+            <div className="flex w-full max-w-[720px] flex-col gap-2">
               {commentaries &&
-                commentaries.map((commentary) => {
-                  if (String(commentary.post_id) != postId) return null
+                commentaries.map((comment) => {
+                  if (String(comment.post_id) != postId) return null
                   return (
-                    <div
-                      key={commentary.commentaryId}
-                      className="flex gap-2"
-                    >
-                      <div className="flex flex-col items-center">
-                        <div className="h-14 w-14 shrink-0">
-                          <img
-                            src={commentary.profile_pic}
-                            className="relative z-20 h-full w-full object-cover"
-                          />
+                    <div>
+                      <div
+                        key={comment.comment_id}
+                        className="flex gap-2 px-4 py-2"
+                      >
+                        <div className="flex flex-col items-center">
+                          <div className="h-14 w-14 shrink-0">
+                            <img
+                              src={comment.profile_pic}
+                              className="relative z-20 h-full w-full object-cover"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                            <h2 className="text-xs text-emerald-300">{comment.name}</h2>
+                            <span className=" text-xs italic text-gray-500">
+                              {moment(comment.created_at).fromNow()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300">{comment.text}</p>
+                          <div className="mt-auto flex gap-2">
+                            <span className="cursor-pointer text-xs text-gray-400 underline">Curtir</span>
+                            <span
+                              className="cursor-pointer text-xs text-gray-400 underline"
+                              onClick={() => handleReplyComment(comment.comment_id)}
+                            >
+                              Responder
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <h2 className="text-xs text-emerald-300">{commentary.name}</h2>
-                          <span className=" text-xs italic text-gray-500">
-                            {moment(commentary.created_at).fromNow()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-300">{commentary.text}</p>
-                        <div className="mt-auto flex gap-2">
-                          <span className="cursor-pointer text-xs text-gray-400 underline ">Curtir</span>
-                          <span className="cursor-pointer text-xs text-gray-400 underline">Reponder</span>
-                        </div>
-                      </div>
+
+                        <Replies commentId={comment.comment_id} postId={postId} commentingId={commentingId}/>
                     </div>
                   )
                 })}
               <div className="mt-6">
-              <NewPostInput
-                mutate={mutate}
-                fieldsParser={postCommentBodySchema}
-              />
+                <NewPostInput
+                  placeholder="Deixe um comentário sobre este post."
+                  mutate={mutateAddNewComment}
+                  fieldsParser={postCommentBodySchema}
+                />
               </div>
             </div>
           </div>

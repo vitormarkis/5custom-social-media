@@ -2,9 +2,8 @@ import { z } from "zod"
 import { userSchema } from "../_features/LamaAuth/schemas"
 import { postSchema } from "./posts"
 
-// text, post_id, author_id BODY POST
 export const commentsSchema = z.object({
-  commentaryId: z.number(),
+  comment_id: z.number(),
   text: z.string(),
   created_at: z.date(),
   author_id: z.number().positive(),
@@ -14,8 +13,21 @@ export const postCommentBodySchema = z.object({
   text: commentsSchema.shape.text,
 })
 
+export const commentReplySchema = z.object({
+  reply_id: z.number(),
+  text: z.string().max(249),
+  created_at: z.date(),
+  author_id: z.number().positive(),
+  comment_id: z.number().positive(),
+})
+
+export const replyBodySchema = z.object({
+  text: commentReplySchema.shape.text,
+  comment_id: commentReplySchema.shape.comment_id,
+})
+
 export const postCommentsSchema = z.object({
-  commentaryId: commentsSchema.shape.commentaryId,
+  comment_id: commentsSchema.shape.comment_id,
   text: commentsSchema.shape.text,
   created_at: commentsSchema.shape.created_at,
   author_id: commentsSchema.shape.author_id,
@@ -26,3 +38,4 @@ export const postCommentsSchema = z.object({
 })
 
 export type IPostComment = z.infer<typeof postCommentsSchema>
+export type IPostCommentBody = z.infer<typeof postCommentBodySchema>

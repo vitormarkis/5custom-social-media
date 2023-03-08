@@ -35,7 +35,7 @@ const Posts: React.FC = () => {
     <div className="flex">
       <div className="custom-scroll flex border-x border-x-gray-800">
         <main className="relative flex w-[900px] grow flex-col justify-between">
-          <section className="chat custom-scroll flex flex-col-reverse overflow-auto">
+          <section className="chat custom-scroll flex flex-col-reverse overflow-y-scroll">
             <div></div>
             <div className="flex flex-col ">
               {posts &&
@@ -49,6 +49,7 @@ const Posts: React.FC = () => {
           </section>
           <div className="w-full gap-2 border-t border-t-black bg-gray-800 px-4 py-4">
             <NewPostInput
+              placeholder="Fale um pouco sobre o que você está pensando..."
               className=""
               mutate={mutate}
               fieldsParser={postBodySchema}
