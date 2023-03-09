@@ -43,7 +43,7 @@ export const getLikedPosts: RequestHandler = (request, response) => {
     from posts as p
     join post_likes as pl
     on p.id = pl.post_id
-    join users as a
+    join users as aT
     on p.author_id = a.id
     left join comments as c
     on c.post_id = p.id
