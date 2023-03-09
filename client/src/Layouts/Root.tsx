@@ -8,8 +8,6 @@ function RootLayout() {
   const navigate = useNavigate()
   const { currentUser, logout } = useLamaAuth()
 
-  console.log(currentUser)
-
   const handleLogoutButton = () => {
     logout()
     navigate("/login")

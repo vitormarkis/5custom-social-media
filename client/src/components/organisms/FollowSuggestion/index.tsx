@@ -25,7 +25,6 @@ const FollowSuggestion: React.FC = () => {
   })
 
   const followUsers = allUsers?.map((user) => followUserSuggestionSchema.parse(user))
-  console.log(followUsers)
 
   const { mutate } = useMutation({
     mutationFn: (followed_user_id: IRelationShipToggle) => {
@@ -45,8 +44,6 @@ const FollowSuggestion: React.FC = () => {
     acc.push(item.followed_user_id)
     return acc
   }, [])
-
-  console.log(relationships)
 
   return (
     <div className="hidden grow-[2] border-l border-l-gray-800 md:block">

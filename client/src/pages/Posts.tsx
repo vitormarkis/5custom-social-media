@@ -12,8 +12,8 @@ import { useLamaAuth } from "../_features/LamaAuth/context"
 
 const Posts: React.FC = () => {
   const { reset } = useForm<IPostBody>()
-  const { currentUser } = useLamaAuth()
-  const { mutate } = useMutation({
+  const { currentUser: me } = useLamaAuth()
+  const { mutate: addNewPostMutate } = useMutation({
     mutationFn: (newPostData: IPostBody) => api.post("/posts", newPostData),
     onSuccess: () => {
       queryClient.invalidateQueries()
@@ -23,7 +23,7 @@ const Posts: React.FC = () => {
   })
 
   const { data: rawPosts } = useQuery<APIPost[]>({
-    queryKey: ["posts", currentUser?.id],
+    queryKey: ["posts", me?.id],
     queryFn: () => api.get("/posts").then((response) => response.data),
     staleTime: 1000 * 10,
     onError: console.log,
@@ -34,7 +34,7 @@ const Posts: React.FC = () => {
   return (
     <div className="flex">
       <div className="custom-scroll flex border-x border-x-gray-800">
-        <main className="relative flex w-[900px] grow flex-col justify-between">
+        <main className="relative flex max-w-[900px] w-full grow flex-col justify-between">
           <section className="chat custom-scroll flex flex-col-reverse overflow-y-scroll">
             <div></div>
             <div className="flex flex-col ">
@@ -51,7 +51,7 @@ const Posts: React.FC = () => {
             <NewPostInput
               placeholder="Fale um pouco sobre o que você está pensando..."
               className=""
-              mutate={mutate}
+              mutate={addNewPostMutate}
               fieldsParser={postBodySchema}
             />
           </div>

@@ -46,8 +46,6 @@ export const toggleRelationship: RequestHandler = (request, response) => {
     if (error) return response.status(500).json(error)
     const isAdding = found.length === 0
 
-    console.log({ isAdding })
-
     const addQ = "insert into relationships (follower_user_id, followed_user_id) values (?, ?);"
 
     const deleteQ = "delete from relationships where follower_user_id = (?) AND followed_user_id = (?);"

@@ -51,8 +51,6 @@ const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId 
 
   const replies = rawReplies
 
-  console.log(replies)
-
   return (
     <div className="my-6 border border-gray-600 p-4 ">
       <div className="mb-4">

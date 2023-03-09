@@ -14,3 +14,13 @@ export const likedPostSchema = z
 
 export type IPostLikes = z.infer<typeof postLikesSchema>
 export type ILikedPost = z.infer<typeof likedPostSchema>
+
+/**
+ * BODY
+ */
+export const postLikesBodySchema = postLikesSchema.pick({
+  user_id: true,
+  post_id: true,
+})
+
+export type IPostLikesBody = z.infer<typeof postLikesBodySchema>

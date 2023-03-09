@@ -254,7 +254,6 @@ export const getPostCommentReplies: RequestHandler = (request, response) => {
     if (result.length === 0) {
       return response.status(404).json({ message: "Não existe nenhum comentário com esse id." })
     }
-    console.log({ result })
 
     const q = `select 
       r.id as reply_id, 
