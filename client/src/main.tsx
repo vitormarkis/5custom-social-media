@@ -9,6 +9,7 @@ import Login from "./pages/Login"
 import PostPage from "./pages/PostPage"
 import Posts from "./pages/Posts"
 import Profile from "./pages/Profile"
+import SavedPosts from "./pages/SavedPosts"
 import queryClient from "./services/queryClient"
 import LamaAuth from "./_features/LamaAuth/context"
 import PrivilegedPage from "./_features/LamaAuth/PrivilegedPage"
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
         element: (
           <PrivilegedPage>
             <Posts />
+          </PrivilegedPage>
+        ),
+      },
+      {
+        path: "/saved-posts",
+        element: (
+          <PrivilegedPage>
+            <SavedPosts />
           </PrivilegedPage>
         ),
       },

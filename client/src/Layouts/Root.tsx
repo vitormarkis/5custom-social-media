@@ -37,6 +37,14 @@ function RootLayout() {
                 Posts
               </NavLink>
             ) : null}
+            {currentUser ? (
+              <NavLink
+                to="/saved-posts"
+                className={style("px-4 py-2 rounded-lg flex items-center")}
+              >
+                Posts Salvos
+              </NavLink>
+            ) : null}
           </nav>
           <nav>
             {currentUser && (
