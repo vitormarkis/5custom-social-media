@@ -130,13 +130,14 @@ export const getPost: RequestHandler = (request, response) => {
     from posts as p 
     join users as u 
     on u.id = p.author_id 
-    join comments as c 
+    left join comments as c 
     on c.post_id = p.id 
     where p.id = (?)
   `
 
   connection.query<any[]>(q, [postId], (error, result) => {
     if (error) return response.status(500).json(error)
+    
     const post = result[0]
     return response.status(201).json(post)
   })

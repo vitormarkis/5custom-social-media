@@ -6,6 +6,7 @@ import { XOctagon } from "@styled-icons/bootstrap/XOctagon"
 import { useQuery } from "@tanstack/react-query"
 import moment from "moment"
 import ReactDOM from "react-dom"
+import { useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { ILikedPost, likedPostSchema } from "../schemas/posts"
 import { IUserWhoLikeThePost } from "../schemas/post_likes"
@@ -105,6 +106,7 @@ const likedPosts = [
 // ]
 
 const SavedPosts: React.FC = () => {
+  const navigate = useNavigate()
   const { currentUser: me } = useLamaAuth()
 
   const { data: likedPosts } = useQuery<ILikedPost[]>({
@@ -174,8 +176,8 @@ const SavedPosts: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <button className=" border border-slate-500 bg-gray-700 px-6 py-1.5 text-sm leading-4">
-                          Mensagem
+                        <button onClick={() => navigate('/post/' + post.post_id)} className=" border border-slate-500 bg-gray-700 px-6 py-1.5 text-sm leading-4">
+                          Ver post
                         </button>
                       </div>
                     </div>
