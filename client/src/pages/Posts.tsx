@@ -9,10 +9,13 @@ import Post from "../components/molecules/Post"
 import { APIPost } from "../components/molecules/Post/types"
 import FollowSuggestion from "../components/organisms/FollowSuggestion"
 import { useLamaAuth } from "../_features/LamaAuth/context"
+import { likedPostSchema, postLikesSchema } from "../schemas/post_likes"
+import { z } from "zod"
 
 const Posts: React.FC = () => {
   const { reset } = useForm<IPostBody>()
   const { currentUser: me } = useLamaAuth()
+
   const { mutate: addNewPostMutate } = useMutation({
     mutationFn: (newPostData: IPostBody) => api.post("/posts", newPostData),
     onSuccess: () => {
@@ -29,6 +32,13 @@ const Posts: React.FC = () => {
     onError: console.log,
   })
 
+  const { data: likedPosts } = useQuery({
+    queryKey: ["post-likes", me?.id],
+    queryFn: () => api.get("/posts/liked-posts").then((res) => z.array(postLikesSchema).parse(res.data)),
+    staleTime: 1000 * 60, // 1 minuto
+    select: (likedPosts) => likedPostSchema.parse(likedPosts),
+  })
+
   const posts = rawPosts?.sort((a, b) => (a.post_created_at > b.post_created_at ? 1 : -1))
 
   return (
@@ -38,11 +48,12 @@ const Posts: React.FC = () => {
           <section className="chat custom-scroll flex flex-col-reverse overflow-y-scroll">
             <div></div>
             <div className="flex flex-col ">
-              {posts &&
+              {posts && likedPosts &&
                 posts.map((post) => (
                   <Post
                     key={post.post_id}
                     post={post}
+                    likedPosts={likedPosts}
                   />
                 ))}
             </div>

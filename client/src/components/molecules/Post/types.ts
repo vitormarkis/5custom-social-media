@@ -1,3 +1,5 @@
+import { ILikedPost } from "../../../schemas/post_likes"
+
 export interface APIPost {
   post_id: number
   profile_pic: string
@@ -10,4 +12,5 @@ export interface APIPost {
 
 export interface Props {
   post: APIPost
+  likedPosts: ILikedPost
 }

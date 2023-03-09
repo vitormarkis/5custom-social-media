@@ -13,35 +13,10 @@ import queryClient from "../../../services/queryClient"
 import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Props } from "./types"
 
-// const apiresponse: IPostLikes[] = [
-//   {
-//     post_like_id: 1,
-//     user_id: 1,
-//     post_id: 24,
-//   },
-//   {
-//     post_like_id: 2,
-//     user_id: 1,
-//     post_id: 20,
-//   },
-// ]
-
-// const likedPosts: ILikedPost[] = apiresponse.reduce((acc: ILikedPost[], item) => {
-//   acc.push(item.post_id)
-//   return acc
-// }, [])
-
-const Post: React.FC<Props> = ({ post }) => {
+const Post: React.FC<Props> = ({ post, likedPosts }) => {
   const { currentUser: me } = useLamaAuth()
   const postCreatedAt = moment(post.post_created_at).fromNow()
   const navigate = useNavigate()
-
-  const { data: likedPosts } = useQuery({
-    queryKey: ["post-likes", me?.id],
-    queryFn: () => api.get("/posts/liked-posts").then((res) => z.array(postLikesSchema).parse(res.data)),
-    staleTime: 1000 * 60, // 1 minuto
-    select: (likedPosts) => likedPostSchema.parse(likedPosts),
-  })
 
   const { mutate: togglePostLikeMutate } = useMutation({
     mutationFn: (toggleLikePayload: IPostLikesBody) => api.post("/posts/liked-posts", toggleLikePayload),
