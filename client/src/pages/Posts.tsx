@@ -43,8 +43,8 @@ const Posts: React.FC = () => {
 
   return (
     <div className="flex">
-      <div className="custom-scroll flex border-x border-x-gray-800">
-        <main className="relative flex w-full max-w-[900px] grow flex-col justify-between">
+      <div className="custom-scroll flex w-full max-w-[900px] border-x border-x-gray-800">
+        <main className="relative flex grow flex-col justify-between">
           <section className="chat custom-scroll flex flex-col-reverse overflow-y-scroll">
             <div></div>
             <div className="flex flex-col ">

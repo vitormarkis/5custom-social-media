@@ -14,7 +14,7 @@ export const postLikesSchema = z.object({
 export const likedPostSchemaArray = z
   .array(postLikesSchema)
   .transform((postLikes) => postLikes.reduce((acc: number[], item) => (acc.push(item.post_id), acc), []))
-  
+
 export const userWhoLikeThePostSchema = z.object({
   user_id: userSchema.shape.id,
   profile_pic: userSchema.shape.profile_pic,
@@ -23,7 +23,7 @@ export const userWhoLikeThePostSchema = z.object({
 })
 
 export type IPostLikes = z.infer<typeof postLikesSchema>
-export type ILikedPost = z.infer<typeof likedPostSchemaArray>
+export type ILikedPostArray = z.infer<typeof likedPostSchemaArray>
 export type IUserWhoLikeThePost = z.infer<typeof userWhoLikeThePostSchema>
 
 /**

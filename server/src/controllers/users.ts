@@ -53,8 +53,8 @@ export const getLikedPosts: RequestHandler = (request, response) => {
       SELECT 
         p.id as post_id,
         p.text,
-        COUNT(DISTINCT pl.id) AS likes_amount,
-        COUNT(c.id) AS comments_amount,
+        COUNT(distinct pl.id) AS likes_amount,
+        COUNT(distinct c.id) AS comments_amount,
         a.profile_pic,
         p.author_id,
         a.username,
@@ -63,7 +63,7 @@ export const getLikedPosts: RequestHandler = (request, response) => {
       JOIN users AS a ON p.author_id = a.id
       LEFT JOIN post_likes AS pl ON p.id = pl.post_id
       LEFT JOIN comments AS c ON c.post_id = p.id
-      WHERE pl.user_id = (?)
+      WHERE pl.post_id IN ( select post_id from post_likes where user_id = (?) )
       GROUP BY p.id;
     `
     

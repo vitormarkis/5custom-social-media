@@ -1,4 +1,4 @@
-import { ILikedPost } from "../../../schemas/post_likes"
+import { ILikedPostArray } from "../../../schemas/post_likes"
 
 export interface APIPost {
   post_id: number
@@ -12,5 +12,5 @@ export interface APIPost {
 
 export interface Props {
   post: APIPost
-  likedPosts: ILikedPost
+  likedPosts: ILikedPostArray
 }

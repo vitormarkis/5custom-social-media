@@ -5,10 +5,13 @@ import { ChatSquareDots } from "@styled-icons/bootstrap/ChatSquareDots"
 import { XOctagon } from "@styled-icons/bootstrap/XOctagon"
 import { useQuery } from "@tanstack/react-query"
 import moment from "moment"
-import { useState } from "react"
 import ReactDOM from "react-dom"
+import { z } from "zod"
+import { ILikedPost, likedPostSchema } from "../schemas/posts"
 import { IUserWhoLikeThePost } from "../schemas/post_likes"
 import { api } from "../services/axios"
+import { IRelationshipsId, relationshipSchema } from "../types/relationships"
+import { useLamaAuth } from "../_features/LamaAuth/context"
 
 const relationships = [
   {
@@ -102,23 +105,41 @@ const likedPosts = [
 // ]
 
 const SavedPosts: React.FC = () => {
-  const [likedPostsArray, setLikedPostsArray] = useState(
-    likedPosts.reduce((acc: number[], item) => (acc.push(item.post_id), acc), [])
-  )
-  const [followedUserIdArray, setFollowedUserIdArray] = useState(
-    relationships.reduce((acc: number[], item) => (acc.push(item.followed_user_id), acc), [])
+  const { currentUser: me } = useLamaAuth()
+
+  const { data: likedPosts } = useQuery<ILikedPost[]>({
+    queryKey: ["liked-posts", me?.id],
+    queryFn: () => api.get("/users/liked-posts").then((res) => z.array(likedPostSchema).parse(res.data)),
+  })
+
+  const likedPostsArray = likedPosts?.reduce((acc: number[], item) => (acc.push(item.post_id), acc), [])
+
+  const { data: relationships } = useQuery<IRelationshipsId[]>({
+    queryKey: ["relationships", me?.id],
+    queryFn: () => api.get("/users/liked-posts").then((res) => z.array(relationshipSchema).parse(res.data)),
+  })
+
+  const followedUserIdArray = relationships?.reduce(
+    (acc: number[], item) => (acc.push(item.followed_user_id), acc),
+    []
   )
 
+  // const [likedPostsArray, setLikedPostsArray] = useState(
+  //   likedPosts.reduce((acc: number[], item) => (acc.push(item.post_id), acc), [])
+  // )
+  // const [followedUserIdArray, setFollowedUserIdArray] = useState(
+  // )
+
   function handleToggleLikePost(postId: number) {
-    setLikedPostsArray((prevState) =>
-      prevState.includes(postId) ? prevState.filter((post_id) => post_id !== postId) : [...prevState, postId]
-    )
+    // setLikedPostsArray((prevState) =>
+    //   prevState.includes(postId) ? prevState.filter((post_id) => post_id !== postId) : [...prevState, postId]
+    // )
   }
 
   function handleToggleFollowUser(userId: number) {
-    setFollowedUserIdArray((prevState) =>
-      prevState.includes(userId) ? prevState.filter((post_id) => post_id !== userId) : [...prevState, userId]
-    )
+    // setFollowedUserIdArray((prevState) =>
+    //   prevState.includes(userId) ? prevState.filter((post_id) => post_id !== userId) : [...prevState, userId]
+    // )
   }
 
   return (
@@ -126,72 +147,74 @@ const SavedPosts: React.FC = () => {
       <div>
         <div className="flex justify-center">
           <div className="bg-true w-full max-w-[560px] bg-gray-900">
-            {likedPosts.map((post) => (
-              <div className="flex flex-col gap-2 p-4 not-last-of-type:border-b not-last-of-type:border-b-slate-500">
-                <div className="flex gap-2">
-                  <div className="h-12 w-12 shrink-0 overflow-hidden border border-slate-500">
-                    <img
-                      src={post.profile_pic}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1 self-center leading-4">
-                    <p className="font-semibold text-cyan-400">{post.name}</p>
-                    <p className="text-sm text-slate-500">@{post.username}</p>
-                  </div>
-                  <div className="ml-4 flex gap-2">
-                    <div onClick={() => handleToggleFollowUser(post.author_id)}>
-                      {followedUserIdArray.includes(post.author_id) ? (
-                        <button className=" border border-cyan-600 bg-cyan-600 px-6 py-1.5 text-sm leading-4">
-                          Seguir
-                        </button>
-                      ) : (
-                        <button className=" border border-slate-500 px-6 py-1.5 text-sm leading-4">
-                          Seguindo
-                        </button>
-                      )}
+            {likedPosts &&
+              likedPosts.map((post) => (
+                <div className="flex flex-col gap-2 p-4 not-last-of-type:border-b not-last-of-type:border-b-slate-500">
+                  <div className="flex gap-2">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden border border-slate-500">
+                      <img
+                        src={post.profile_pic}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
-                    <div>
-                      <button className=" border border-slate-500 bg-gray-700 px-6 py-1.5 text-sm leading-4">
-                        Mensagem
-                      </button>
+                    <div className="flex flex-col gap-1 self-center leading-4">
+                      <p className="font-semibold text-cyan-400">{post.name}</p>
+                      <p className="text-sm text-slate-500">@{post.username}</p>
                     </div>
-                  </div>
-                  <div className="ml-auto">
-                    <div
-                      onClick={() => handleToggleLikePost(post.post_id)}
-                      className="group cursor-pointer rounded-md p-2 transition-all duration-100 hover:bg-gray-700"
-                    >
-                      <div className="h-5 w-5 -translate-y-[3px]">
-                        {likedPostsArray.includes(post.post_id) ? (
-                          <BookmarkFill className="text-gray-500 transition-all duration-100 group-hover:text-white" />
+                    <div className="ml-4 flex gap-2">
+                      <div onClick={() => handleToggleFollowUser(post.author_id)}>
+                        {followedUserIdArray && followedUserIdArray.includes(post.author_id) ? (
+                          <button className=" border border-cyan-600 bg-cyan-600 px-6 py-1.5 text-sm leading-4">
+                            Seguir
+                          </button>
                         ) : (
-                          <Bookmark />
+                          <button className=" border border-slate-500 px-6 py-1.5 text-sm leading-4">
+                            Seguindo
+                          </button>
                         )}
                       </div>
+                      <div>
+                        <button className=" border border-slate-500 bg-gray-700 px-6 py-1.5 text-sm leading-4">
+                          Mensagem
+                        </button>
+                      </div>
+                    </div>
+                    <div className="ml-auto">
+                      <div
+                        onClick={() => handleToggleLikePost(post.post_id)}
+                        className="group cursor-pointer rounded-md p-2 transition-all duration-100 hover:bg-gray-700"
+                      >
+                        <div className="h-5 w-5 -translate-y-[3px]">
+                          {likedPostsArray && likedPostsArray.includes(post.post_id) ? (
+                            <BookmarkFill className="text-gray-500 transition-all duration-100 group-hover:text-white" />
+                          ) : (
+                            <Bookmark />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div>
+                      <p className="text-neutral-200">{post.text}</p>
+                    </div>
+                    <div className="mt-2 flex gap-5">
+                      {post.likes_amount > 0 && <LikesAmountModal post={post} />}
+                      {post.comments_amount > 0 && (
+                        <div className="flex items-center gap-1.5 text-sm text-gray-400">
+                          <div className="h-4 w-4 leading-4">
+                            <ChatSquareDots className="" />
+                          </div>
+                          <p>
+                            {post.comments_amount}{" "}
+                            {post.comments_amount === 1 ? "commentário" : "comentários"}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-                <div>
-                  <div>
-                    <p className="text-neutral-200">{post.text}</p>
-                  </div>
-                  <div className="mt-2 flex gap-5">
-                    {post.likes_amount > 0 && <LikesAmountModal post={post} />}
-                    {post.comments_amount > 0 && (
-                      <div className="flex items-center gap-1.5 text-sm text-gray-400">
-                        <div className="h-4 w-4 leading-4">
-                          <ChatSquareDots className="" />
-                        </div>
-                        <p>
-                          {post.comments_amount} {post.comments_amount === 1 ? "commentário" : "comentários"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </div>
@@ -211,9 +234,7 @@ function LikesAmountModal({ post }: { post: (typeof likedPosts)[number] }) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <div
-          className="flex cursor-pointer items-center gap-1 text-sm text-gray-400 hover:underline"
-        >
+        <div className="flex cursor-pointer items-center gap-1 text-sm text-gray-400 hover:underline">
           <div className="h-4 w-4 -translate-y-[3px]">
             <Bookmark className="" />
           </div>
