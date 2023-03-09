@@ -1,7 +1,11 @@
+import * as Dialog from "@radix-ui/react-dialog"
 import { Bookmark } from "@styled-icons/bootstrap/Bookmark"
 import { BookmarkFill } from "@styled-icons/bootstrap/BookmarkFill"
 import { ChatSquareDots } from "@styled-icons/bootstrap/ChatSquareDots"
+import { XOctagon } from "@styled-icons/bootstrap/XOctagon"
+import moment from "moment"
 import { useState } from "react"
+import ReactDOM from "react-dom"
 
 const relationships = [
   {
@@ -56,6 +60,44 @@ const likedPosts = [
   },
 ]
 
+const peopleWhoLikeThePost = [
+  {
+    user_id: 1,
+    profile_pic:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    name: "Michel Dias",
+    created_at: "2023-03-09 14:02:30",
+  },
+  {
+    user_id: 1,
+    profile_pic:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    name: "Michel Dias",
+    created_at: "2023-03-09 14:02:30",
+  },
+  {
+    user_id: 1,
+    profile_pic:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    name: "Michel Dias",
+    created_at: "2023-03-09 14:02:30",
+  },
+  {
+    user_id: 1,
+    profile_pic:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    name: "Michel Dias",
+    created_at: "2023-03-09 14:02:30",
+  },
+  {
+    user_id: 1,
+    profile_pic:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    name: "Michel Dias",
+    created_at: "2023-03-09 14:02:30",
+  },
+]
+
 const SavedPosts: React.FC = () => {
   const [likedPostsArray, setLikedPostsArray] = useState(
     likedPosts.reduce((acc: number[], item) => (acc.push(item.post_id), acc), [])
@@ -76,6 +118,8 @@ const SavedPosts: React.FC = () => {
     )
   }
 
+  function handleSeeWhoLikesThePost(postId: number) {}
+
   return (
     <div>
       <div>
@@ -84,7 +128,7 @@ const SavedPosts: React.FC = () => {
             {likedPosts.map((post) => (
               <div className="flex flex-col gap-2 p-4 not-last-of-type:border-b not-last-of-type:border-b-slate-500">
                 <div className="flex gap-2">
-                  <div className="shrink-0 h-12 w-12 overflow-hidden border border-slate-500">
+                  <div className="h-12 w-12 shrink-0 overflow-hidden border border-slate-500">
                     <img
                       src={post.profile_pic}
                       className="h-full w-full object-cover"
@@ -133,14 +177,64 @@ const SavedPosts: React.FC = () => {
                   </div>
                   <div className="mt-2 flex gap-5">
                     {post.likes_amount > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-gray-400">
-                        <div className="h-4 w-4 -translate-y-[3px]">
-                          <Bookmark className="" />
-                        </div>
-                        <p>
-                          {post.likes_amount} {post.likes_amount === 1 ? "like" : "likes"}
-                        </p>
-                      </div>
+                      <Dialog.Root>
+                        <Dialog.Trigger asChild>
+                          <div
+                            onClick={() => handleSeeWhoLikesThePost}
+                            className="flex cursor-pointer items-center gap-1 text-sm text-gray-400 hover:underline"
+                          >
+                            <div className="h-4 w-4 -translate-y-[3px]">
+                              <Bookmark className="" />
+                            </div>
+                            <p>
+                              {post.likes_amount} {post.likes_amount === 1 ? "like" : "likes"}
+                            </p>
+                          </div>
+                        </Dialog.Trigger>
+                        {ReactDOM.createPortal(
+                          <Dialog.Content>
+                            <Dialog.Overlay className="absolute inset-0 h-screen w-screen bg-black/40" />
+                            <div className="absolute top-1/2 left-1/2 w-full max-w-[420px] border border-neutral-400 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-md bg-neutral-800 shadow-xl shadow-black/40 ">
+                              <div className="relative p-6 ">
+                                <div>
+                                  <div>
+                                    <h2 className="text-xl font-semibold text-neutral-300 mb-6">Quem também salvou esse post:</h2>
+                                  </div>
+                                  {peopleWhoLikeThePost.map((user) => (
+                                    <div
+                                      key={user.user_id}
+                                      className="flex items-center gap-2 text-neutral-200 not-last-of-type:mb-2"
+                                    >
+                                      <div className="h-8 w-8 shrink-0 overflow-hidden border border-neutral-200">
+                                        <img
+                                          src={user.profile_pic}
+                                          className="h-full w-full object-cover"
+                                        />
+                                      </div>
+                                      <div>
+                                        <p>{user.name}</p>
+                                      </div>
+                                      <div className="ml-auto">
+                                        <p className="text-xs text-neutral-500">
+                                          {moment(user.created_at).fromNow()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <Dialog.Close asChild>
+                                  <button className="cursor pointer group absolute right-0 top-0 rounded-bl-xl bg-red-600 p-2 px-4 leading-4">
+                                    <div className="h-5 w-5 overflow-hidden leading-4">
+                                      <XOctagon className="group-hover text-white" />
+                                    </div>
+                                  </button>
+                                </Dialog.Close>
+                              </div>
+                            </div>
+                          </Dialog.Content>,
+                          document.querySelector("#portal")!
+                        )}
+                      </Dialog.Root>
                     )}
                     {post.comments_amount > 0 && (
                       <div className="flex items-center gap-1.5 text-sm text-gray-400">

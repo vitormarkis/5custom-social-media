@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-popover": "^1.0.4",
     "@styled-icons/bootstrap": "^10.47.0",
     "@styled-icons/evaicons-solid": "^10.46.0",
