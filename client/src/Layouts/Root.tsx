@@ -16,23 +16,23 @@ function RootLayout() {
   const style =
     (styleClasses: string) =>
     ({ isActive }: { isActive: boolean; isPending: boolean }) =>
-      `${isActive ? "bg-black/20" : ""} ${styleClasses}`
+      `${isActive ? "bg-white/10 text-cyan-400 font-semibold" : ""} ${styleClasses}`
 
   return (
-    <div className="w-screen h-screen max-h-screen bg-gray-900 text-white flex flex-col overflow-y-auto custom-scroll">
-      <header className="w-full bg-gray-800 h-16 flex items-center justify-center border-b border-b-gray-900">
-        <main className="p-4 w-full max-w-[1280px] flex justify-between">
+    <div className="custom-scroll flex h-screen max-h-screen w-screen flex-col overflow-y-auto bg-gray-900 text-white">
+      <header className="flex h-16 w-full justify-center border-b border-b-gray-900 bg-black">
+        <main className=" flex w-full max-w-[1280px] justify-between">
           <nav className="flex gap-2">
             <NavLink
               to="/"
-              className={style("px-4 py-2 rounded-lg flex items-center")}
+              className={style("flex items-center px-4")}
             >
               Home
             </NavLink>
             {currentUser ? (
               <NavLink
                 to="/posts"
-                className={style("px-4 py-2 rounded-lg flex items-center")}
+                className={style("flex items-center px-4")}
               >
                 Posts
               </NavLink>
@@ -40,31 +40,31 @@ function RootLayout() {
             {currentUser ? (
               <NavLink
                 to="/saved-posts"
-                className={style("px-4 py-2 rounded-lg flex items-center")}
+                className={style("flex items-center px-4")}
               >
                 Posts Salvos
               </NavLink>
             ) : null}
           </nav>
-          <nav>
+          <nav className="self-center">
             {currentUser && (
               <div className="flex items-center">
-                <div className="flex items-end flex-col">
-                  <h2 className="text-base text-gray-200 font-semibold leading-5">{currentUser.name}</h2>
-                  <span className="block text-gray-400 leading-5 text-sm">{currentUser.username}</span>
+                <div className="flex flex-col items-end gap-0.5">
+                  <h2 className="text-sm font-semibold leading-[0.875rem] text-gray-200">{currentUser.name}</h2>
+                  <span className="leading-3 block text-xs text-gray-400">{currentUser.username}</span>
                 </div>
                 <NavLink
                   to="/profile"
-                  className="cursor-pointer rounded-full overflow-hidden border-4 border-black w-12 h-12 ml-3"
+                  className="ml-3 h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-white"
                 >
                   <img
                     src={currentUser.profile_pic}
-                    className="block w-full h-full object-cover"
+                    className="block h-full w-full object-cover"
                   />
                 </NavLink>
                 <Popover.Root>
                   <Popover.Trigger asChild>
-                    <button className="rounded-full ml-2 w-10 h-7 flex items-center justify-center active:bg-gray-700">
+                    <button className="ml-2 flex h-7 w-10 items-center justify-center rounded-full active:bg-gray-700">
                       <ThreeDots width={22} />
                     </button>
                   </Popover.Trigger>
@@ -72,9 +72,9 @@ function RootLayout() {
                     asChild
                     align="end"
                   >
-                    <div className="py-1 px-1 bg-slate-700 rounded-lg">
+                    <div className="rounded-lg bg-slate-700 py-1 px-1">
                       <button
-                        className="py-0.5 pl-2 pr-4 hover:bg-slate-600 rounded-md flex gap-2 items-center"
+                        className="flex items-center gap-2 rounded-md py-0.5 pl-2 pr-4 hover:bg-slate-600"
                         onClick={handleLogoutButton}
                       >
                         <div className="flex items-center justify-center">
@@ -90,7 +90,7 @@ function RootLayout() {
             {!currentUser && (
               <NavLink
                 to="/login"
-                className={style("px-4 py-2 rounded-lg block bg-blue-500")}
+                className={style("block rounded-lg bg-blue-500 px-4 py-2")}
               >
                 Login
               </NavLink>
@@ -98,7 +98,7 @@ function RootLayout() {
           </nav>
         </main>
       </header>
-      <div className="w-full max-w-[1280px] mx-auto chat">
+      <div className="chat mx-auto w-full max-w-[1280px]">
         <Outlet />
       </div>
     </div>
