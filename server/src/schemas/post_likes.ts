@@ -12,6 +12,13 @@ export const postLikesSchema = z.object({
   post_id: postSchema.shape.id,
 })
 
+export const userWhoLikeThePostSchema = z.object({
+  user_id: userSchema.shape.id,
+  profile_pic: userSchema.shape.profile_pic,
+  name: userSchema.shape.name,
+  created_at: z.date().transform(String),
+})
+
 export type IPostLikes = z.infer<typeof postLikesSchema>
 
 /**

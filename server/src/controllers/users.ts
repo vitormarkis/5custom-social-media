@@ -1,19 +1,17 @@
 import { RequestHandler } from "express"
 import { RowDataPacket } from "mysql2"
+import { userWhoLikeThePostSchema } from "../schemas/post_likes"
 import { relationShipToggleSchema } from "../schemas/relationships"
-import { TUser } from "../schemas/users"
 import { connection } from "../services/mysql"
-import { IRelationshipsId } from "../types/relationships"
+import { z } from "zod"
 
-interface UserQuery extends RowDataPacket, TUser {}
-interface RelationshipsQuery extends RowDataPacket, IRelationshipsId {}
-interface GetAllUsers extends RowDataPacket, TUser {}
+type Query = {} & unknown & RowDataPacket
 
 export const getUsers: RequestHandler = (request, response) => {
   const { userId } = request
 
   const q = "select * from users where id = ?"
-  connection.query<UserQuery[]>(q, [userId], (error, result) => {
+  connection.query<Query[]>(q, [userId], (error, result) => {
     if (error) return response.status(500).json(error)
     if (result.length === 0) return response.status(404).json({ message: "Usuário não encontrado." })
     const { password, ...user } = result[0]
@@ -23,7 +21,7 @@ export const getUsers: RequestHandler = (request, response) => {
 
 export const getAllUsers: RequestHandler = (request, response) => {
   const q = "select * from users"
-  connection.query<GetAllUsers[]>(q, [], (error, usersWithPassword) => {
+  connection.query<Query[]>(q, [], (error, usersWithPassword) => {
     if (error) return response.status(500).json(error)
     const users = usersWithPassword.map(({ password, ...rest }) => rest)
     return response.json(users)
@@ -65,10 +63,35 @@ export const getLikedPosts: RequestHandler = (request, response) => {
     GROUP BY p.id;
   `
   
-  connection.query(newQ, [userId], (error, result) => {
+  connection.query<Query[]>(newQ, [userId], (error, result) => {
     if (error) return response.status(500).json(error)
     return response.json(result)
   })
+}
+
+export const getUsersWhoLikeThePost: RequestHandler = (request, response) => {
+  const { postId } = request.params
+
+  const q = `
+    select 
+    u.id as user_id,
+      u.profile_pic,
+      u.name,
+      pl.created_at
+    from users as u
+    join post_likes as pl
+    on u.id = pl.user_id
+    where pl.post_id = (?);
+  `
+  
+  try {
+    connection.query<Query[]>(q, [postId], (_, result) => {
+      const usersWhoLikeThePost = z.array(userWhoLikeThePostSchema).parse(result)
+      return response.json(usersWhoLikeThePost)
+    })
+  } catch (error) {
+    return response.status(500).json(error)
+  }
 }
 
 export const getRelationships: RequestHandler = (request, response) => {
@@ -80,7 +103,7 @@ export const getRelationships: RequestHandler = (request, response) => {
   where follower_user_id = (?)
   `
 
-  connection.query<RelationshipsQuery[]>(q, [userId], (error, relationships) => {
+  connection.query<Query[]>(q, [userId], (error, relationships) => {
     if (error) return response.status(500).json(error)
     return response.json(relationships)
   })
@@ -92,7 +115,7 @@ export const toggleRelationship: RequestHandler = (request, response) => {
 
   const q = "select * from relationships where follower_user_id = (?) AND followed_user_id = (?)"
 
-  connection.query<RelationshipsQuery[]>(q, [userId, followed_user_id], (error, found) => {
+  connection.query<Query[]>(q, [userId, followed_user_id], (error, found) => {
     if (error) return response.status(500).json(error)
     const isAdding = found.length === 0
 
@@ -102,7 +125,7 @@ export const toggleRelationship: RequestHandler = (request, response) => {
 
     const q = isAdding ? addQ : deleteQ
 
-    connection.query<RelationshipsQuery[]>(q, [userId, followed_user_id], error => {
+    connection.query<Query[]>(q, [userId, followed_user_id], error => {
       if (error) return response.json(error)
       return response.send("Toggle do usuário " + userId + " no usuário " + followed_user_id)
     })
