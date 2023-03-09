@@ -4,6 +4,7 @@ import { userWhoLikeThePostSchema } from "../schemas/post_likes"
 import { relationShipToggleSchema } from "../schemas/relationships"
 import { connection } from "../services/mysql"
 import { z } from "zod"
+import { likedPostSchema } from "../schemas/posts"
 
 type Query = {} & unknown & RowDataPacket
 
@@ -29,44 +30,50 @@ export const getAllUsers: RequestHandler = (request, response) => {
 }
 
 export const getLikedPosts: RequestHandler = (request, response) => {
-  const userId = request.userId! 
-
-  const q = `
-    select 
-    pl.id as liked_post_id, 
-      a.username as author_username, 
-      a.profile_pic as author_profile_pic,
-      p.text as post_text,
-      count(c.id) as comments_amount
-    from posts as p
-    join post_likes as pl
-    on p.id = pl.post_id
-    join users as aT
-    on p.author_id = a.id
-    left join comments as c
-    on c.post_id = p.id
-    where pl.user_id = (?)
-    group by p.id;
-  `
-  
-  const newQ = `
-    SELECT 
-      COUNT(DISTINCT pl.id) AS likes_amount,
-      COUNT(c.id) AS comment_amount,
-      p.*,
-      a.*
-    FROM posts AS p
-    JOIN users AS a ON p.author_id = a.id
-    LEFT JOIN post_likes AS pl ON p.id = pl.post_id
-    LEFT JOIN comments AS c ON c.post_id = p.id
-    WHERE pl.user_id = (?)
-    GROUP BY p.id;
-  `
-  
-  connection.query<Query[]>(newQ, [userId], (error, result) => {
-    if (error) return response.status(500).json(error)
-    return response.json(result)
-  })
+  try {
+    const userId = request.userId! 
+    const q = `
+      select 
+      pl.id as liked_post_id, 
+        a.username as author_username, 
+        a.profile_pic as author_profile_pic,
+        p.text as post_text,
+        count(c.id) as comments_amount
+      from posts as p
+      join post_likes as pl
+      on p.id = pl.post_id
+      join users as aT
+      on p.author_id = a.id
+      left join comments as c
+      on c.post_id = p.id
+      where pl.user_id = (?)
+      group by p.id;
+    `
+    const newQ = `
+      SELECT 
+        p.id as post_id,
+        p.text,
+        COUNT(DISTINCT pl.id) AS likes_amount,
+        COUNT(c.id) AS comments_amount,
+        a.profile_pic,
+        p.author_id,
+        a.username,
+        a.name
+      FROM posts AS p
+      JOIN users AS a ON p.author_id = a.id
+      LEFT JOIN post_likes AS pl ON p.id = pl.post_id
+      LEFT JOIN comments AS c ON c.post_id = p.id
+      WHERE pl.user_id = (?)
+      GROUP BY p.id;
+    `
+    
+    connection.query<Query[]>(newQ, [userId], (_, result) => {
+      const likedPosts = z.array(likedPostSchema).parse(result)
+      return response.json(likedPosts)
+    })
+  } catch (error) {
+    return response.status(500).json(error)
+  }
 }
 
 export const getUsersWhoLikeThePost: RequestHandler = (request, response) => {

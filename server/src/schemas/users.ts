@@ -24,6 +24,8 @@ export const loginCredentialsSchema = userSchema.pick({
   password: true,
 })
 
+export const userLikedPosts = z.obje
+
 /**
  * Types
  */

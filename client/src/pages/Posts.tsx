@@ -4,13 +4,13 @@ import { IPostBody, postBodySchema } from "../schemas/posts"
 import { api } from "../services/axios"
 import queryClient from "../services/queryClient"
 
+import { z } from "zod"
 import NewPostInput from "../components/molecules/NewPostInput"
 import Post from "../components/molecules/Post"
 import { APIPost } from "../components/molecules/Post/types"
 import FollowSuggestion from "../components/organisms/FollowSuggestion"
+import { likedPostSchemaArray, postLikesSchema } from "../schemas/post_likes"
 import { useLamaAuth } from "../_features/LamaAuth/context"
-import { likedPostSchema, postLikesSchema } from "../schemas/post_likes"
-import { z } from "zod"
 
 const Posts: React.FC = () => {
   const { reset } = useForm<IPostBody>()
@@ -36,7 +36,7 @@ const Posts: React.FC = () => {
     queryKey: ["post-likes", me?.id],
     queryFn: () => api.get("/posts/liked-posts").then((res) => z.array(postLikesSchema).parse(res.data)),
     staleTime: 1000 * 60, // 1 minuto
-    select: (likedPosts) => likedPostSchema.parse(likedPosts),
+    select: (likedPosts) => likedPostSchemaArray.parse(likedPosts),
   })
 
   const posts = rawPosts?.sort((a, b) => (a.post_created_at > b.post_created_at ? 1 : -1))
@@ -44,11 +44,12 @@ const Posts: React.FC = () => {
   return (
     <div className="flex">
       <div className="custom-scroll flex border-x border-x-gray-800">
-        <main className="relative flex max-w-[900px] w-full grow flex-col justify-between">
+        <main className="relative flex w-full max-w-[900px] grow flex-col justify-between">
           <section className="chat custom-scroll flex flex-col-reverse overflow-y-scroll">
             <div></div>
             <div className="flex flex-col ">
-              {posts && likedPosts &&
+              {posts &&
+                likedPosts &&
                 posts.map((post) => (
                   <Post
                     key={post.post_id}
