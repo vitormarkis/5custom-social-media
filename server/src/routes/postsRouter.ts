@@ -5,6 +5,7 @@ const postsRouter = express.Router()
 
 postsRouter.get("/", PostsControllers.getPosts)
 postsRouter.get("/liked-posts", PostsControllers.getLikedPosts)
+postsRouter.post("/liked-posts", PostsControllers.toggleLikePost)
 postsRouter.get("/:postId", PostsControllers.getPost)
 postsRouter.post("/", PostsControllers.createPost)
 

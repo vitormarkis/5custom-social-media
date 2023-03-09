@@ -3,7 +3,7 @@ import { RowDataPacket } from "mysql2"
 import { z } from "zod"
 import { postCommentBodySchema, postCommentSchema } from "../schemas/postComments"
 import { postAPIResponseSchema, postBodySchema } from "../schemas/posts"
-import { postLikesSchema } from "../schemas/post_likes"
+import { postLikesBodySchema, postLikesSchema } from "../schemas/post_likes"
 import {
   commentReplyBodySchema,
   commentReplyGetSchema,
@@ -64,6 +64,46 @@ export const getLikedPosts: RequestHandler = (request, response) => {
     if (error) return response.status(500).json(error)
     const likedPosts = z.array(postLikesSchema).parse(result)
     return response.status(200).json(likedPosts)
+  })
+}
+
+export const toggleLikePost: RequestHandler = (request, response) => {
+  const userId = request.userId!
+
+  const { post_id, user_id } = postLikesBodySchema.parse({ ...request.body, user_id: +userId })
+
+  const foundQuery = `
+    select * 
+    from post_likes 
+    where 
+      user_id = (?) and 
+      post_id = (?)
+  `
+
+  connection.query<Query[]>(foundQuery, [user_id, post_id], (error, found) => {
+    if (error) return response.status(500).json(error)
+    const isAdding: boolean = found.length === 0
+
+    const addingQuery = `
+      insert into post_likes
+      (user_id, post_id)
+      values
+      (?, ?);
+    `
+
+    const deletingQuery = `
+      delete from post_likes where user_id = (?) and post_id = (?)
+    `
+
+    const q = isAdding ? addingQuery : deletingQuery
+    const message = isAdding
+      ? `Usuário ${user_id} curtiu o post ${post_id}`
+      : `Usuário ${user_id} descurtiu o post ${post_id}`
+
+    connection.query<Query[]>(q, [user_id, post_id], error => {
+      if (error) return response.status(500).json(error)
+      return response.status(201).json({ message })
+    })
   })
 }
 
