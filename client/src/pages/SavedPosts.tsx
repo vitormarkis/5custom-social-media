@@ -3,9 +3,12 @@ import { Bookmark } from "@styled-icons/bootstrap/Bookmark"
 import { BookmarkFill } from "@styled-icons/bootstrap/BookmarkFill"
 import { ChatSquareDots } from "@styled-icons/bootstrap/ChatSquareDots"
 import { XOctagon } from "@styled-icons/bootstrap/XOctagon"
+import { useQuery } from "@tanstack/react-query"
 import moment from "moment"
 import { useState } from "react"
 import ReactDOM from "react-dom"
+import { IUserWhoLikeThePost } from "../schemas/post_likes"
+import { api } from "../services/axios"
 
 const relationships = [
   {
@@ -28,7 +31,7 @@ const relationships = [
 
 const likedPosts = [
   {
-    post_id: 1,
+    post_id: 10,
     text: "O barça vai vir forte esse ano, com a contratação do Roberto Carlos e do Didi, o Cristiano vai sofrer.",
     likes_amount: 7,
     comments_amount: 12,
@@ -39,7 +42,7 @@ const likedPosts = [
     name: "Michel Dias",
   },
   {
-    post_id: 2,
+    post_id: 11,
     text: "Cara eu acho que nesse último grenal, não foi justo, eu acho que teve dedo das casas de apostas nesse jogo, porque...",
     likes_amount: 0,
     comments_amount: 1,
@@ -49,7 +52,7 @@ const likedPosts = [
     name: "Leonardo Schell",
   },
   {
-    post_id: 3,
+    post_id: 15,
     text: "Autenticação com refresh token são mais seguras porque impossibilitam que o atacante possa ter acesso ao conteúdo da conta por muito tempo. Eu descobri que é muito melhor deixar as divs como display flex e ir usando grow e shrink do que ficar tentando ajustar o tamanho de tudo com width e max-width, principamente quando envolve view port!",
     likes_amount: 1,
     comments_amount: 0,
@@ -60,43 +63,43 @@ const likedPosts = [
   },
 ]
 
-const peopleWhoLikeThePost = [
-  {
-    user_id: 1,
-    profile_pic:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
-    name: "Michel Dias",
-    created_at: "2023-03-09 14:02:30",
-  },
-  {
-    user_id: 1,
-    profile_pic:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
-    name: "Michel Dias",
-    created_at: "2023-03-09 14:02:30",
-  },
-  {
-    user_id: 1,
-    profile_pic:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
-    name: "Michel Dias",
-    created_at: "2023-03-09 14:02:30",
-  },
-  {
-    user_id: 1,
-    profile_pic:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
-    name: "Michel Dias",
-    created_at: "2023-03-09 14:02:30",
-  },
-  {
-    user_id: 1,
-    profile_pic:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
-    name: "Michel Dias",
-    created_at: "2023-03-09 14:02:30",
-  },
-]
+// const peopleWhoLikeThePost = [
+//   {
+//     user_id: 1,
+//     profile_pic:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+//     name: "Michel Dias",
+//     created_at: "2023-03-09 14:02:30",
+//   },
+//   {
+//     user_id: 1,
+//     profile_pic:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+//     name: "Michel Dias",
+//     created_at: "2023-03-09 14:02:30",
+//   },
+//   {
+//     user_id: 1,
+//     profile_pic:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+//     name: "Michel Dias",
+//     created_at: "2023-03-09 14:02:30",
+//   },
+//   {
+//     user_id: 1,
+//     profile_pic:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+//     name: "Michel Dias",
+//     created_at: "2023-03-09 14:02:30",
+//   },
+//   {
+//     user_id: 1,
+//     profile_pic:
+//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+//     name: "Michel Dias",
+//     created_at: "2023-03-09 14:02:30",
+//   },
+// ]
 
 const SavedPosts: React.FC = () => {
   const [likedPostsArray, setLikedPostsArray] = useState(
@@ -117,8 +120,6 @@ const SavedPosts: React.FC = () => {
       prevState.includes(userId) ? prevState.filter((post_id) => post_id !== userId) : [...prevState, userId]
     )
   }
-
-  function handleSeeWhoLikesThePost(postId: number) {}
 
   return (
     <div>
@@ -176,66 +177,7 @@ const SavedPosts: React.FC = () => {
                     <p className="text-neutral-200">{post.text}</p>
                   </div>
                   <div className="mt-2 flex gap-5">
-                    {post.likes_amount > 0 && (
-                      <Dialog.Root>
-                        <Dialog.Trigger asChild>
-                          <div
-                            onClick={() => handleSeeWhoLikesThePost}
-                            className="flex cursor-pointer items-center gap-1 text-sm text-gray-400 hover:underline"
-                          >
-                            <div className="h-4 w-4 -translate-y-[3px]">
-                              <Bookmark className="" />
-                            </div>
-                            <p>
-                              {post.likes_amount} {post.likes_amount === 1 ? "like" : "likes"}
-                            </p>
-                          </div>
-                        </Dialog.Trigger>
-                        {ReactDOM.createPortal(
-                          <Dialog.Content>
-                            <Dialog.Overlay className="absolute inset-0 h-screen w-screen bg-black/40" />
-                            <div className="absolute top-1/2 left-1/2 w-full max-w-[420px] border border-neutral-400 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-md bg-neutral-800 shadow-xl shadow-black/40 ">
-                              <div className="relative p-6 ">
-                                <div>
-                                  <div>
-                                    <h2 className="text-xl font-semibold text-neutral-300 mb-6">Quem também salvou esse post:</h2>
-                                  </div>
-                                  {peopleWhoLikeThePost.map((user) => (
-                                    <div
-                                      key={user.user_id}
-                                      className="flex items-center gap-2 text-neutral-200 not-last-of-type:mb-2"
-                                    >
-                                      <div className="h-8 w-8 shrink-0 overflow-hidden border border-neutral-200">
-                                        <img
-                                          src={user.profile_pic}
-                                          className="h-full w-full object-cover"
-                                        />
-                                      </div>
-                                      <div>
-                                        <p>{user.name}</p>
-                                      </div>
-                                      <div className="ml-auto">
-                                        <p className="text-xs text-neutral-500">
-                                          {moment(user.created_at).fromNow()}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                                <Dialog.Close asChild>
-                                  <button className="cursor pointer group absolute right-0 top-0 rounded-bl-xl bg-red-600 p-2 px-4 leading-4">
-                                    <div className="h-5 w-5 overflow-hidden leading-4">
-                                      <XOctagon className="group-hover text-white" />
-                                    </div>
-                                  </button>
-                                </Dialog.Close>
-                              </div>
-                            </div>
-                          </Dialog.Content>,
-                          document.querySelector("#portal")!
-                        )}
-                      </Dialog.Root>
-                    )}
+                    {post.likes_amount > 0 && <LikesAmountModal post={post} />}
                     {post.comments_amount > 0 && (
                       <div className="flex items-center gap-1.5 text-sm text-gray-400">
                         <div className="h-4 w-4 leading-4">
@@ -258,3 +200,72 @@ const SavedPosts: React.FC = () => {
 }
 
 export default SavedPosts
+
+function LikesAmountModal({ post }: { post: (typeof likedPosts)[number] }) {
+  const { data: peopleWhoLikeThePost } = useQuery<IUserWhoLikeThePost[]>({
+    queryKey: ["users-who-like-the-post", post.post_id],
+    queryFn: () => api.get(`/users/${post.post_id}/users-who-like-the-post`).then((res) => res.data),
+  })
+
+  // function handleSeeWhoLikesThePost(postId: number) {}
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <div
+          className="flex cursor-pointer items-center gap-1 text-sm text-gray-400 hover:underline"
+        >
+          <div className="h-4 w-4 -translate-y-[3px]">
+            <Bookmark className="" />
+          </div>
+          <p>
+            {post.likes_amount} {post.likes_amount === 1 ? "like" : "likes"}
+          </p>
+        </div>
+      </Dialog.Trigger>
+      {ReactDOM.createPortal(
+        <Dialog.Content>
+          <Dialog.Overlay className="absolute inset-0 h-screen w-screen bg-black/40" />
+          <div className="absolute top-1/2 left-1/2 w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-md border border-neutral-400 bg-neutral-800 shadow-xl shadow-black/40 ">
+            <div className="relative p-6 ">
+              <div>
+                <div>
+                  <h2 className="mb-6 text-xl font-semibold text-neutral-300">
+                    Quem também salvou esse post:
+                  </h2>
+                </div>
+                {peopleWhoLikeThePost &&
+                  peopleWhoLikeThePost.map((user) => (
+                    <div
+                      key={user.user_id}
+                      className="flex items-center gap-2 text-neutral-200 not-last-of-type:mb-2"
+                    >
+                      <div className="h-8 w-8 shrink-0 overflow-hidden border border-neutral-200">
+                        <img
+                          src={user.profile_pic}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p>{user.name}</p>
+                      </div>
+                      <div className="ml-auto">
+                        <p className="text-xs text-neutral-500">{moment(user.created_at).fromNow()}</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+              <Dialog.Close asChild>
+                <button className="cursor pointer group absolute right-0 top-0 rounded-bl-xl bg-red-600 p-2 px-4 leading-4">
+                  <div className="h-5 w-5 overflow-hidden leading-4">
+                    <XOctagon className="group-hover text-white" />
+                  </div>
+                </button>
+              </Dialog.Close>
+            </div>
+          </div>
+        </Dialog.Content>,
+        document.querySelector("#portal")!
+      )}
+    </Dialog.Root>
+  )
+}
