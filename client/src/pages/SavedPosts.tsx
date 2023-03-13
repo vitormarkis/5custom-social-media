@@ -3,7 +3,7 @@ import { Bookmark } from "@styled-icons/bootstrap/Bookmark"
 import { BookmarkFill } from "@styled-icons/bootstrap/BookmarkFill"
 import { ChatSquareDots } from "@styled-icons/bootstrap/ChatSquareDots"
 import { XOctagon } from "@styled-icons/bootstrap/XOctagon"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import moment from "moment"
 import ReactDOM from "react-dom"
 import { useNavigate } from "react-router-dom"
@@ -11,6 +11,7 @@ import { z } from "zod"
 import { ILikedPost, likedPostSchema } from "../schemas/posts"
 import { IUserWhoLikeThePost } from "../schemas/post_likes"
 import { api } from "../services/axios"
+import queryClient from "../services/queryClient"
 import { IRelationshipsId, relationshipSchema } from "../types/relationships"
 import { useLamaAuth } from "../_features/LamaAuth/context"
 
@@ -118,7 +119,7 @@ const SavedPosts: React.FC = () => {
 
   const { data: relationships } = useQuery<IRelationshipsId[]>({
     queryKey: ["relationships", me?.id],
-    queryFn: () => api.get("/users/liked-posts").then((res) => z.array(relationshipSchema).parse(res.data)),
+    queryFn: () => api.get("/users/relationships").then((res) => z.array(relationshipSchema).parse(res.data)),
   })
 
   const followedUserIdArray = relationships?.reduce(
@@ -132,26 +133,46 @@ const SavedPosts: React.FC = () => {
   // const [followedUserIdArray, setFollowedUserIdArray] = useState(
   // )
 
-  function handleToggleLikePost(postId: number) {
-    // setLikedPostsArray((prevState) =>
-    //   prevState.includes(postId) ? prevState.filter((post_id) => post_id !== postId) : [...prevState, postId]
-    // )
-  }
+  function handleToggleLikePost(postId: number) {}
 
-  function handleToggleFollowUser(userId: number) {
-    // setFollowedUserIdArray((prevState) =>
-    //   prevState.includes(userId) ? prevState.filter((post_id) => post_id !== userId) : [...prevState, userId]
-    // )
+  const { mutate } = useMutation({
+    mutationFn: (followed_user_id: { followed_user_id: number }) =>
+      api.put("/users/relationships", followed_user_id),
+    onSuccess: (_, { followed_user_id }) => {
+      const oldRelationships = queryClient.getQueryData<IRelationshipsId[]>(["relationships", me?.id])
+      if (!oldRelationships) return
+      const relationshipsArray = oldRelationships.reduce(
+        (acc: number[], item) => (acc.push(item.followed_user_id), acc),
+        []
+      )
+      const alreadyFollows: boolean = relationshipsArray?.includes(followed_user_id)
+      const newRelationships = alreadyFollows
+        ? oldRelationships?.filter((r) => r.followed_user_id !== followed_user_id)
+        : [
+            ...oldRelationships,
+            { followed_user_id, relationship_id: Math.random().toString(25).substring(2, 9) },
+          ]
+      queryClient.setQueryData(["relationships", me?.id], newRelationships)
+    },
+  })
+
+  async function handleToggleFollowUser(followed_user_id: number) {
+    mutate({ followed_user_id })
   }
 
   return (
-    <div>
-      <div>
+    <div className="relative">
+      <div className="fixed right-[0] top-[0] h-[120px] w-[620px] translate-x-[60px] bg-indigo-400 blur-[270px]" />
+      <div className="absolute left-[0] bottom-[60px] h-[120px] w-[620px] -translate-x-[100px] bg-indigo-600 blur-[270px]" />
+      <div className="relative z-10">
         <div className="flex justify-center">
-          <div className="bg-true w-full max-w-[560px] bg-gray-900">
+          <div className="bg-true w-full max-w-[560px]">
             {likedPosts &&
               likedPosts.map((post) => (
-                <div className="flex flex-col gap-2 p-4 not-last-of-type:border-b not-last-of-type:border-b-slate-500">
+                <div
+                  key={post.post_id}
+                  className="flex flex-col gap-2 p-4 not-last-of-type:border-b not-last-of-type:border-b-slate-500"
+                >
                   <div className="flex gap-2">
                     <div className="h-12 w-12 shrink-0 overflow-hidden border border-slate-500">
                       <img
@@ -166,17 +187,20 @@ const SavedPosts: React.FC = () => {
                     <div className="ml-4 flex gap-2">
                       <div onClick={() => handleToggleFollowUser(post.author_id)}>
                         {followedUserIdArray && followedUserIdArray.includes(post.author_id) ? (
-                          <button className=" border border-cyan-600 bg-cyan-600 px-6 py-1.5 text-sm leading-4">
-                            Seguir
-                          </button>
-                        ) : (
                           <button className=" border border-slate-500 px-6 py-1.5 text-sm leading-4">
                             Seguindo
+                          </button>
+                        ) : (
+                          <button className=" border border-cyan-600 bg-cyan-600 px-6 py-1.5 text-sm leading-4">
+                            Seguir
                           </button>
                         )}
                       </div>
                       <div>
-                        <button onClick={() => navigate('/post/' + post.post_id)} className=" border border-slate-500 bg-gray-700 px-6 py-1.5 text-sm leading-4">
+                        <button
+                          onClick={() => navigate("/post/" + post.post_id)}
+                          className=" border border-slate-500 bg-gray-700 px-6 py-1.5 text-sm leading-4"
+                        >
                           Ver post
                         </button>
                       </div>

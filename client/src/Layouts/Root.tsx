@@ -16,11 +16,11 @@ function RootLayout() {
   const style =
     (styleClasses: string) =>
     ({ isActive }: { isActive: boolean; isPending: boolean }) =>
-      `${isActive ? "bg-white/10 text-cyan-400 font-semibold" : ""} ${styleClasses}`
+      `${isActive ? "bg-[#00000040] text-cyan-400 font-semibold" : ""} ${styleClasses}`
 
   return (
-    <div className="custom-scroll flex h-screen max-h-screen w-screen flex-col overflow-y-auto bg-gray-900 text-white">
-      <header className="flex h-16 w-full justify-center border-b border-b-gray-900 bg-black">
+    <div className="custom-scroll flex h-screen max-h-screen w-screen flex-col overflow-y-auto bg-gray-900 text-white overflow-x-hidden">
+      <header className="relative z-10 flex h-16 w-full justify-center border-b border-b-slate-600 backdrop-blur-[220px]">
         <main className=" flex w-full max-w-[1280px] justify-between">
           <nav className="flex gap-2">
             <NavLink

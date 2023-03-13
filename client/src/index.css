@@ -7,6 +7,10 @@ input {
   font-family: "Roboto";
 }
 
+#portal, #portal * {
+  z-index: 9999;
+}
+
 .post-buttons>div:not(:last-of-type) {
   @apply border-b border-b-gray-900
 }

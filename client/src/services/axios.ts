@@ -2,7 +2,7 @@ import axios from "axios"
 import { useLamaAuth } from "../_features/LamaAuth/context"
 
 export const api = axios.create({
-  baseURL: "http://localhost:3434/api",
+  baseURL: "http://192.168.1.16:3434/api",
   withCredentials: true,
 })
 

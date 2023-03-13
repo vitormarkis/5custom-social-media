@@ -56,12 +56,12 @@ export const login: RequestHandler = (request, response) => {
 
     const refreshToken = jwt.sign({}, ENToken.JWT_REFRESH_SECRET_TOKEN, {
       subject: String(loginUser.id),
-      expiresIn: "1h",
+      expiresIn: "72h",
     })
 
     const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
       subject: String(loginUser.id),
-      expiresIn: "5m",
+      expiresIn: "10h",
     })
 
     return (
@@ -110,7 +110,7 @@ export const refreshTokenHandler: RequestHandler = async (request, response) => 
     jwt.verify(refreshToken, ENToken.JWT_REFRESH_SECRET_TOKEN)
     const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
       subject: refreshTokenPayload.sub,
-      expiresIn: "5m",
+      expiresIn: "10h",
     })
 
     return response.cookie(ENCookies.ACCESS_TOKEN, accessToken).json({ accessToken })

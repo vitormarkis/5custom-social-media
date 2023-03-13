@@ -39,6 +39,8 @@ const Posts: React.FC = () => {
     select: (likedPosts) => likedPostSchemaArray.parse(likedPosts),
   })
 
+  if (!likedPosts || !rawPosts) return <></>
+
   const posts = rawPosts?.sort((a, b) => (a.post_created_at > b.post_created_at ? 1 : -1))
 
   return (
