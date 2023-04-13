@@ -6,6 +6,7 @@ import { z } from "zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import queryClient from "../../../services/queryClient"
 import moment from "moment"
+import { DefaultUserProfilePicture as defPic } from "../../../urls"
 
 interface Props {
   commentId: number
@@ -64,7 +65,7 @@ const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId 
                 <div className="offset-banana z-10 bg-teal-500" />
 
                 <img
-                  src={reply.profile_pic}
+                  src={reply.profile_pic ?? defPic}
                   className="relative z-20 h-full w-full object-cover"
                 />
               </div>

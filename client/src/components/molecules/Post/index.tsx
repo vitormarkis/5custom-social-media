@@ -11,6 +11,7 @@ import { api } from "../../../services/axios"
 import queryClient from "../../../services/queryClient"
 import { useLamaAuth } from "../../../_features/LamaAuth/context"
 import { Props } from "./types"
+import { DefaultUserProfilePicture as defPic } from "../../../urls"
 
 const Post: React.FC<Props> = ({ post, likedPosts }) => {
   const { currentUser: me } = useLamaAuth()
@@ -34,7 +35,7 @@ const Post: React.FC<Props> = ({ post, likedPosts }) => {
       <div className="flex h-full w-12 shrink-0 flex-col overflow-hidden border-r border-r-black">
         <img
           className="block w-full grow object-cover"
-          src={post.profile_pic}
+          src={post.profile_pic ?? defPic}
         />
       </div>
       <div

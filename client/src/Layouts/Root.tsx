@@ -3,6 +3,7 @@ import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import { LogOut } from "@styled-icons/evaicons-solid/LogOut"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { useLamaAuth } from "../_features/LamaAuth/context"
+import { DefaultUserProfilePicture as defPic } from "../urls" 
 
 function RootLayout() {
   const navigate = useNavigate()
@@ -58,7 +59,7 @@ function RootLayout() {
                   className="ml-3 h-10 w-10 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-white"
                 >
                   <img
-                    src={currentUser.profile_pic}
+                    src={currentUser.profile_pic ?? defPic}
                     className="block h-full w-full object-cover"
                   />
                 </NavLink>

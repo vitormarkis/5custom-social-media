@@ -1,42 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import moment from "moment"
 import { useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
 import NewPostInput from "../components/molecules/NewPostInput"
 import { IPostComment, IPostCommentBody, postCommentBodySchema, replyBodySchema } from "../schemas/comments"
 import { postPageSchema } from "../schemas/posts"
-import { commentReplyFieldsSchema, commentReplyPayloadBodySchema, ICommentReplyBody, ICommentReplyFields, IPostCommentReply, postCommentReplySchema } from "../schemas/replies"
 import { api } from "../services/axios"
+import { DefaultUserProfilePicture as defPic } from "../urls"
+import { useParams } from "react-router-dom"
 import queryClient from "../services/queryClient"
-import { z } from "zod"
 import Replies from "../components/organisms/Replies"
-
-interface IReplyBody {
-  text: string
-}
-
-const replies = [
-  {
-    author_id: 2,
-    name: "Kauan Barts",
-    created_at: "2023-03-06 21:30:22",
-    text: "Só respondendo para dizer que discordo!",
-    profile_pic:
-      "https://1.bp.blogspot.com/-rwEdYIDEKQY/X52lu3v7-lI/AAAAAAAADbo/cZjgiCDgdpk6xQQpnJjmtJPRUZ-TDhgEwCLcBGAsYHQ/s500/ecfaf90f3d9128e0a9995af74f52770c.jpg",
-    reply_id: 1,
-    comment_id: 4,
-  },
-  {
-    author_id: 3,
-    name: "Leonardo Schell",
-    created_at: "2023-03-06 21:31:22",
-    text: "Nada a ver Kauan",
-    profile_pic: "https://img.quizur.com/f/img60d0d76e470cb8.51574981.jpg?lastEdited=1624299378",
-    reply_id: 2,
-    comment_id: 4,
-  },
-]
 
 const PostPage: React.FC = () => {
   const [commentingId, setCommentingId] = useState<number | null>(null)
@@ -76,7 +48,7 @@ const PostPage: React.FC = () => {
           <div className="relative z-20 mb-3 h-24 w-24 shrink-0">
             <div className="img-cover z-10 bg-emerald-500" />
             <img
-              src={post?.profile_pic}
+              src={post?.profile_pic ?? defPic}
               className="relative z-20 h-full w-full object-cover"
             />
           </div>
@@ -111,7 +83,7 @@ const PostPage: React.FC = () => {
                         <div className="flex flex-col items-center">
                           <div className="h-14 w-14 shrink-0">
                             <img
-                              src={comment.profile_pic}
+                              src={comment.profile_pic ?? ""}
                               className="relative z-20 h-full w-full object-cover"
                             />
                           </div>

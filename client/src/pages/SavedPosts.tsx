@@ -14,25 +14,26 @@ import { api } from "../services/axios"
 import queryClient from "../services/queryClient"
 import { IRelationshipsId, relationshipSchema } from "../types/relationships"
 import { useLamaAuth } from "../_features/LamaAuth/context"
+import { DefaultUserProfilePicture as defPic } from "../urls"
 
-const relationships = [
-  {
-    relationship_id: 2,
-    followed_user_id: 1,
-  },
-  {
-    relationship_id: 71,
-    followed_user_id: 4,
-  },
-  {
-    relationship_id: 72,
-    followed_user_id: 6,
-  },
-  {
-    relationship_id: 86,
-    followed_user_id: 5,
-  },
-]
+// const relationships = [
+//   {
+//     relationship_id: 2,
+//     followed_user_id: 1,
+//   },
+//   {
+//     relationship_id: 71,
+//     followed_user_id: 4,
+//   },
+//   {
+//     relationship_id: 72,
+//     followed_user_id: 6,
+//   },
+//   {
+//     relationship_id: 86,
+//     followed_user_id: 5,
+//   },
+// ]
 
 const likedPosts = [
   {
@@ -40,8 +41,7 @@ const likedPosts = [
     text: "O barça vai vir forte esse ano, com a contratação do Roberto Carlos e do Didi, o Cristiano vai sofrer.",
     likes_amount: 7,
     comments_amount: 12,
-    profile_pic:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCe8ayX7udeRDac-2P_tDJkC7eGQ6QGe7C0A&usqp=CAU",
+    profile_pic: null,
     author_id: 5,
     username: "ikedias",
     name: "Michel Dias",
@@ -176,7 +176,7 @@ const SavedPosts: React.FC = () => {
                   <div className="flex gap-2">
                     <div className="h-12 w-12 shrink-0 overflow-hidden border border-slate-500">
                       <img
-                        src={post.profile_pic}
+                        src={post.profile_pic ?? defPic}
                         className="h-full w-full object-cover"
                       />
                     </div>
@@ -288,7 +288,7 @@ function LikesAmountModal({ post }: { post: (typeof likedPosts)[number] }) {
                     >
                       <div className="h-8 w-8 shrink-0 overflow-hidden border border-neutral-200">
                         <img
-                          src={user.profile_pic}
+                          src={user.profile_pic ?? defPic}
                           className="h-full w-full object-cover"
                         />
                       </div>

@@ -3,11 +3,10 @@ import Spinner from "../components/Spinner"
 import { IUser } from "../schemas/users"
 import { api } from "../services/axios"
 import { useLamaAuth } from "../_features/LamaAuth/context"
+import { DefaultUserProfilePicture as defUser } from "../urls"
 
 const Profile: React.FC = () => {
   const { currentUser } = useLamaAuth()
-
-  // if (!currentUser) return null
 
   const { data: user } = useQuery<IUser>({
     queryKey: ["user", currentUser?.id],
@@ -47,7 +46,7 @@ const Profile: React.FC = () => {
         <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-black">
           {user ? (
             <img
-              src={user.profile_pic}
+              src={user.profile_pic ?? defUser}
               className="block h-full w-full object-cover"
             />
           ) : (

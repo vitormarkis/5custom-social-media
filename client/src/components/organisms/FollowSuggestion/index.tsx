@@ -8,6 +8,7 @@ import { CursorFill } from "@styled-icons/bootstrap/CursorFill"
 import { IRelationShipToggle } from "../../../schemas/relationships"
 import { followUserSuggestionSchema } from "../../../schemas/users"
 import queryClient from "../../../services/queryClient"
+import { DefaultUserProfilePicture as defPic } from "../../../urls"
 
 const FollowSuggestion: React.FC = () => {
   const { currentUser } = useLamaAuth()
@@ -63,7 +64,7 @@ const FollowSuggestion: React.FC = () => {
                 >
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-gray-900 bg-gray-700">
                     <img
-                      src={user.profile_pic}
+                      src={user.profile_pic ?? defPic}
                       alt=""
                       className="h-full w-full object-cover"
                     />
