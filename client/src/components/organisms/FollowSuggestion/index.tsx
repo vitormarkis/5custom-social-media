@@ -54,40 +54,43 @@ const FollowSuggestion: React.FC = () => {
             <h1 className="mb-2 text-2xl font-black">Sugestões:</h1>
           </div>
           <div className="flex flex-col">
-            {followUsers?.map((user) => {
-              if (user.user_id === currentUser?.id) return
+            {followUsers
+              ? followUsers.map((user) => {
+                  if (user.user_id === currentUser?.id) return
 
-              return (
-                <div
-                  onClick={() => handleToggleFollowerUser(user.user_id)}
-                  className="flex cursor-pointer items-center gap-1 py-2 px-4 hover:bg-gray-800"
-                >
-                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-gray-900 bg-gray-700">
-                    <img
-                      src={user.profile_pic ?? defPic}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="ml-1 flex flex-col">
-                    <h1>{user.name}</h1>
-                    <p className="text-sm text-gray-500">{user.username}</p>
-                  </div>
-                  <div className="ml-auto flex w-[80px] flex-col items-center gap-1 px-2">
-                    <button onClick={() => console.log(user.user_id)}>
-                      {followingUsers?.includes(user.user_id) ? (
-                        <CursorFill width={24} />
-                      ) : (
-                        <Cursor width={24} />
-                      )}
-                    </button>
-                    <span className="text-[10px] text-gray-400 hover:underline">
-                      {followingUsers?.includes(user.user_id) ? "Seguindo" : "Seguir"}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
+                  return (
+                    <div
+                      key={user.user_id}
+                      onClick={() => handleToggleFollowerUser(user.user_id)}
+                      className="flex cursor-pointer items-center gap-1 py-2 px-4 hover:bg-gray-800"
+                    >
+                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-gray-900 bg-gray-700">
+                        <img
+                          src={user.profile_pic ?? defPic}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="ml-1 flex flex-col">
+                        <h1>{user.name}</h1>
+                        <p className="text-sm text-gray-500">{user.username}</p>
+                      </div>
+                      <div className="ml-auto flex w-[80px] flex-col items-center gap-1 px-2">
+                        <button onClick={() => console.log(user.user_id)}>
+                          {followingUsers?.includes(user.user_id) ? (
+                            <CursorFill width={24} />
+                          ) : (
+                            <Cursor width={24} />
+                          )}
+                        </button>
+                        <span className="text-[10px] text-gray-400 hover:underline">
+                          {followingUsers?.includes(user.user_id) ? "Seguindo" : "Seguir"}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })
+              : null}
           </div>
         </div>
       </div>

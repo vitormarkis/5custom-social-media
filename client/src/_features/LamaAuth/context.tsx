@@ -13,15 +13,14 @@ interface ILamaAuthContext {
 export const LamaAuthContext = createContext({} as ILamaAuthContext)
 
 const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // const [userRole, setUserRole] = useState<any>("user")
   const [currentUser, setCurrentUser] = useState<IUser | null>(
-    JSON.parse(localStorage.getItem("lamaUser") || "{}") || null
+    JSON.parse(localStorage.getItem("lamaUser")!) || null
   )
 
-  useEffect(() => {
-    const storagedUser = JSON.parse(localStorage.getItem("lamaUser") || "{}")
-    setCurrentUser(storagedUser)
-  }, [])
+  // useEffect(() => {
+  //   const storagedUser = JSON.parse(localStorage.getItem("lamaUser") || "{}")
+  //   setCurrentUser(storagedUser)
+  // }, [])
 
   const login = async (credentials: TLoginCredentials) => {
     const { password, username } = loginCredentialsSchema.parse(credentials)
@@ -41,7 +40,7 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   const logout = async () => {
-    const res: any = await api.post(
+    await api.post(
       "/auth/logout",
       {},
       {
@@ -50,6 +49,7 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     )
     setCurrentUser(null)
     localStorage.removeItem("lamaUser")
+    localStorage.removeItem("refreshToken")
   }
 
   const value: ILamaAuthContext = {

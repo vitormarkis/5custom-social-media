@@ -1,4 +1,3 @@
-import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import dotenv from "dotenv"
@@ -11,10 +10,10 @@ dotenv.config()
 
 const app = express()
 
-app.use(bodyParser.json())
+app.use(express.json())
 app.use(
   cors({
-    origin: "http://192.168.1.16:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 )

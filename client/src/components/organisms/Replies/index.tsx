@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { commentReplyFieldsSchema, commentReplyPayloadBodySchema, ICommentReplyBody, ICommentReplyFields, IPostCommentReply, postCommentReplySchema } from "../../../schemas/replies"
+import {
+  commentReplyFieldsSchema,
+  commentReplyPayloadBodySchema,
+  ICommentReplyBody,
+  ICommentReplyFields,
+  IPostCommentReply,
+  postCommentReplySchema,
+} from "../../../schemas/replies"
 import { api } from "../../../services/axios"
 
 import { z } from "zod"
@@ -15,9 +22,9 @@ interface Props {
 }
 
 const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId }) => {
-  if(comment_id !== commentingId) return null
+  if (comment_id !== commentingId) return null
   const { register, reset, handleSubmit } = useForm<ICommentReplyFields>()
-  
+
   const { data: rawReplies, isLoading } = useQuery<IPostCommentReply[] | []>({
     queryKey: ["postCommentReplies", comment_id],
     queryFn: async () => {
@@ -28,11 +35,11 @@ const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId 
     select: unkReplies => {
       const parse = z.array(postCommentReplySchema).safeParse(unkReplies)
       return parse.success ? parse.data : []
-    }
+    },
   })
 
-  const { mutate: mutataAddNewReply } = useMutation<ICommentReplyBody>({
-    mutationFn: (commentReplyBody) => {
+  const { mutate: mutataAddNewReply } = useMutation({
+    mutationFn: (commentReplyBody: ICommentReplyBody) => {
       return api.post(`/posts/${postId}/comments/replies/create`, commentReplyBody)
     },
     onSuccess: () => {
@@ -40,12 +47,12 @@ const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId 
       reset()
     },
   })
-  
-  const replySubmitHandler: SubmitHandler<ICommentReplyFields> = (formData) => {
+
+  const replySubmitHandler: SubmitHandler<ICommentReplyFields> = formData => {
     const { text } = commentReplyFieldsSchema.parse(formData)
     const replyBody = commentReplyPayloadBodySchema.parse({
       comment_id: comment_id,
-      text
+      text,
     })
     mutataAddNewReply(replyBody)
   }
@@ -55,7 +62,7 @@ const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId 
   return (
     <div className="my-6 border border-gray-600 p-4 ">
       <div className="mb-4">
-        {replies?.map((reply) => (
+        {replies?.map(reply => (
           <div
             key={reply.reply_id}
             className="flex gap-2 p-2"
@@ -65,7 +72,7 @@ const Replies: React.FC<Props> = ({ commentId: comment_id, postId, commentingId 
                 <div className="offset-banana z-10 bg-teal-500" />
 
                 <img
-                  src={reply.profile_pic ?? defPic}
+                  src={reply?.profile_pic ?? defPic}
                   className="relative z-20 h-full w-full object-cover"
                 />
               </div>

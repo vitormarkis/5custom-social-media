@@ -5,6 +5,7 @@ import { RowDataPacket } from "mysql2"
 import { ENCookies, ENToken } from "../constants/secret"
 import { loginCredentialsSchema, registerCredentialsSchema, TUser } from "../schemas/users"
 import { connection } from "../services/mysql"
+import cookies from "cookie"
 
 interface IRefreshToken {
   id: number
@@ -13,7 +14,6 @@ interface IRefreshToken {
 }
 
 interface LoginQuery extends RowDataPacket, TUser {}
-interface RefreshTokenQuery extends RowDataPacket, IRefreshToken {}
 
 export const register: RequestHandler = (request, response) => {
   const credentials = registerCredentialsSchema.parse(request.body)
@@ -56,32 +56,29 @@ export const login: RequestHandler = (request, response) => {
 
     const refreshToken = jwt.sign({}, ENToken.JWT_REFRESH_SECRET_TOKEN, {
       subject: String(loginUser.id),
-      expiresIn: "72h",
+      expiresIn: "10m",
     })
 
     const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
       subject: String(loginUser.id),
-      expiresIn: "10h",
+      expiresIn: "15s",
     })
 
-    return (
-      response
-        // .setHeader("Access-Control-Allow-Origin", "*")
-        .setHeader("Access-Control-Allow-Credentials", "true")
-        .cookie(ENCookies.ACCESS_TOKEN, accessToken, {
-          httpOnly: true,
-        })
-        .cookie(ENCookies.REFRESH_TOKEN, refreshToken, {
-          httpOnly: true,
-        })
-        .status(200)
-        .json({
-          message: "Usuário logado!",
-          user: returnedUser,
-          refreshToken,
-          accessToken,
-        })
-    )
+    return response
+      .setHeader("Access-Control-Allow-Credentials", "true")
+      .cookie(ENCookies.ACCESS_TOKEN, accessToken, {
+        httpOnly: true,
+      })
+      .cookie(ENCookies.REFRESH_TOKEN, refreshToken, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json({
+        message: "Usuário logado!",
+        user: returnedUser,
+        refreshToken,
+        accessToken,
+      })
   })
 }
 
@@ -110,11 +107,23 @@ export const refreshTokenHandler: RequestHandler = async (request, response) => 
     jwt.verify(refreshToken, ENToken.JWT_REFRESH_SECRET_TOKEN)
     const accessToken = jwt.sign({ refreshToken }, ENToken.JWT_SECRET_TOKEN, {
       subject: refreshTokenPayload.sub,
-      expiresIn: "10h",
+      expiresIn: "15s",
     })
 
-    return response.cookie(ENCookies.ACCESS_TOKEN, accessToken).json({ accessToken })
+    return response
+      .setHeader(
+        "Set-Cookie",
+        cookies.serialize(ENCookies.ACCESS_TOKEN, accessToken, {
+          httpOnly: true,
+          sameSite: "none",
+          path: "/",
+          secure: true,
+        })
+      )
+      .json({ accessToken })
   } catch (error) {
-    return response.status(401).json({ type: "INVALID_REFRESH_TOKEN", message: "Refresh token inválido." })
+    return response
+      .status(401)
+      .json({ error_type: "INVALID_REFRESH_TOKEN", message: "Refresh token inválido!!!" })
   }
 }

@@ -83,7 +83,7 @@ const PostPage: React.FC = () => {
                         <div className="flex flex-col items-center">
                           <div className="h-14 w-14 shrink-0">
                             <img
-                              src={comment.profile_pic ?? ""}
+                              src={comment.profile_pic ?? defPic}
                               className="relative z-20 h-full w-full object-cover"
                             />
                           </div>
@@ -108,7 +108,7 @@ const PostPage: React.FC = () => {
                         </div>
                       </div>
 
-                        <Replies commentId={comment.comment_id} postId={postId} commentingId={commentingId}/>
+                        <Replies commentId={comment.comment_id} postId={Number(postId)} commentingId={commentingId}/>
                     </div>
                   )
                 })}

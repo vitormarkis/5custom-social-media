@@ -1,12 +1,13 @@
 {
-  "name": "4protected-layouts",
+  "name": "custom-social-media",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "force:start": "tsc && vite build && vite preview"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.3",
@@ -15,11 +16,9 @@
     "@styled-icons/evaicons-solid": "^10.46.0",
     "@tanstack/react-query": "^4.24.10",
     "@tanstack/react-query-devtools": "^4.24.12",
-    "@types/axios": "^0.14.0",
-    "@types/js-cookie": "^3.0.3",
-    "@types/jsonwebtoken": "^9.0.1",
     "autoprefixer": "^10.4.13",
     "axios": "^1.3.4",
+    "dotenv": "^16.0.3",
     "js-cookie": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
@@ -35,6 +34,9 @@
     "zod": "^3.20.6"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/js-cookie": "^3.0.3",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^3.1.0",

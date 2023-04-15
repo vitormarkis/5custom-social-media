@@ -11,7 +11,7 @@ const Profile: React.FC = () => {
   const { data: user } = useQuery<IUser>({
     queryKey: ["user", currentUser?.id],
     queryFn: () => api.get("/users").then((response) => response.data),
-    staleTime: 1000 * 60, // 1 minuto
+    staleTime: 1000 * 60, // 1 tminuto
     enabled: !!currentUser,
   })
 

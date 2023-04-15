@@ -3,7 +3,7 @@ import { ThreeDots } from "@styled-icons/bootstrap/ThreeDots"
 import { LogOut } from "@styled-icons/evaicons-solid/LogOut"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { useLamaAuth } from "../_features/LamaAuth/context"
-import { DefaultUserProfilePicture as defPic } from "../urls" 
+import { DefaultUserProfilePicture as defPic } from "../urls"
 
 function RootLayout() {
   const navigate = useNavigate()
@@ -20,9 +20,9 @@ function RootLayout() {
       `${isActive ? "bg-[#00000040] text-cyan-400 font-semibold" : ""} ${styleClasses}`
 
   return (
-    <div className="custom-scroll flex h-screen max-h-screen w-screen flex-col overflow-y-auto bg-gray-900 text-white overflow-x-hidden">
+    <div className="custom-scroll flex h-screen max-h-screen w-screen flex-col overflow-y-auto overflow-x-hidden bg-gray-900 text-white">
       <header className="relative z-10 flex h-16 w-full justify-center border-b border-b-slate-600 backdrop-blur-[220px]">
-        <main className=" flex w-full max-w-[1280px] justify-between">
+        <main className=" flex w-full max-w-[1280px] justify-between p-3">
           <nav className="flex gap-2">
             <NavLink
               to="/"
@@ -51,8 +51,10 @@ function RootLayout() {
             {currentUser && (
               <div className="flex items-center">
                 <div className="flex flex-col items-end gap-0.5">
-                  <h2 className="text-sm font-semibold leading-[0.875rem] text-gray-200">{currentUser.name}</h2>
-                  <span className="leading-3 block text-xs text-gray-400">{currentUser.username}</span>
+                  <h2 className="text-sm font-semibold leading-[0.875rem] text-gray-200">
+                    {currentUser.name}
+                  </h2>
+                  <span className="block text-xs leading-3 text-gray-400">{currentUser.username}</span>
                 </div>
                 <NavLink
                   to="/profile"
@@ -91,7 +93,7 @@ function RootLayout() {
             {!currentUser && (
               <NavLink
                 to="/login"
-                className={style("block rounded-lg bg-blue-500 px-4 py-2")}
+                className="block rounded-full px-8 bg-emerald-600 py-2 text-sm border-b border-black/40 shadow-md"
               >
                 Login
               </NavLink>

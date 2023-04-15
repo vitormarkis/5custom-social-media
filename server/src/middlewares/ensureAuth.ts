@@ -9,6 +9,8 @@ export const requireAuth: RequestHandler = (request, response, next) => {
 
   if (!accessToken) return response.status(401).json({ message: "Token não fornecido." })
 
+  // console.log({ accessToken })
+
   try {
     jwt.verify(accessToken, ENToken.JWT_SECRET_TOKEN)
     const { sub } = jwt.decode(accessToken) as JwtPayload
