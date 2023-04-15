@@ -76,7 +76,7 @@ const FollowSuggestion: React.FC = () => {
                         <p className="text-sm text-gray-500">{user.username}</p>
                       </div>
                       <div className="ml-auto flex w-[80px] flex-col items-center gap-1 px-2">
-                        <button onClick={() => console.log(user.user_id)}>
+                        <button>
                           {followingUsers?.includes(user.user_id) ? (
                             <CursorFill width={24} />
                           ) : (

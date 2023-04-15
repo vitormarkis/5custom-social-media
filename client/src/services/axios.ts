@@ -14,7 +14,6 @@ api.interceptors.response.use(
     if (error.response.status === 401 && refreshToken && !originalRequest._retry) {
       originalRequest._retry = true
       try {
-        console.log("Access Token inválido.")
         await axios.post(
           import.meta.env.VITE_SERVER_URL + "/auth/refresh-token",
           { refreshToken },
@@ -24,7 +23,6 @@ api.interceptors.response.use(
         return await api(originalRequest)
       } catch (error: any) {
         if (error.response.status === 401 && error.response.data.error_type === "INVALID_REFRESH_TOKEN") {
-          console.log("Refresh Token inválido.")
           localStorage.removeItem("lamaUser")
           localStorage.removeItem("refreshToken")
           await axios.post(import.meta.env.VITE_SERVER_URL + "/auth/logout", {}, { withCredentials: true })

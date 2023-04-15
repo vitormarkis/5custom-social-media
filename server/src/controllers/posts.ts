@@ -242,7 +242,6 @@ export const createPostCommentReply: RequestHandler = (request, response) => {
 export const getPostCommentReplies: RequestHandler = (request, response) => {
   const unkBody = request.body
   const { comment_id } = commentReplyGetSchema.parse(unkBody)
-  // console.log({ unkBody, comment_id })
 
   const q = `
     select *

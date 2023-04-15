@@ -33,7 +33,6 @@ const LamaAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     localStorage.setItem("refreshToken", data.refreshToken)
     try {
     } catch (error) {
-      console.log(error)
       localStorage.removeItem("lamaUser")
       localStorage.removeItem("refreshToken")
     }
